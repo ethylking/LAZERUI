@@ -1,5 +1,6 @@
 from devices_control import *
 import time
+from printer_controller import PrinterController
 
 class Spectramaker:
     def __init__(self):
