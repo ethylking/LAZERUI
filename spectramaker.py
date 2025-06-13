@@ -38,7 +38,8 @@ class Spectramaker:
             current_wavelength = self.wavemeter.get_wavelength()
             difference = direction * (target_wavelength - current_wavelength)
 
-    def inspect_energy(self) -> None:
+    def inspect_energy(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,
+                     wavelength_step: float = 0., folder: str = "data") -> None:
         if not self.printer.is_connected:
             print("Принтер не подключен!")
             return
@@ -50,56 +51,35 @@ class Spectramaker:
             return
 
         calibration_data = []
-        with open(r'general_calibration.txt', 'r') as file:
+        with open(f'full_calibration.txt', 'r') as file:
             for line in file:
-                parts = line.strip().split()
-                wavelength = float(parts[0])
+                parts = line.strip().split('\t')
+                wavelength = float(parts[0].replace(',', '.'))
                 motor_1_steps = int(parts[1])
                 motor_2_steps = int(parts[2])
                 calibration_data.append((wavelength, motor_1_steps, motor_2_steps))
+        res_file = open(f'{min_wavelength}-{max_wavelength} energy_profile.txt', 'w')
+        file_cal = open(f'{folder}\\calibration_file.txt', 'w')
+        target_wavelength = wavelength_min
+        while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
+                
 
-        file_res = open(r'sh_energy_dependence.txt', 'a')
-        for target_wavelength, target_steps_1, target_steps_2 in calibration_data:
-            if target_wavelength < 635.160:
-                continue
-            if abs(target_wavelength - 635.160) < 0.001:
-                while input('Поменяйте положение зеркала и напечатайте \'next\': ') != 'next':
-                    continue
-
-            current_wavelength = self.wavemeter.get_wavelength()
-            if not isinstance(current_wavelength, float):
-                print(f"Некорректное значение длины волны: {current_wavelength}")
-                continue
-
-            current_steps_1 = 0
-            current_steps_2 = 0
-            found_current = False
-            for wavelength, steps_1, steps_2 in calibration_data:
-                if abs(wavelength - current_wavelength) < 0.001:
-                    current_steps_1 = steps_1
-                    current_steps_2 = steps_2
-                    found_current = True
-                    break
-
-            if not found_current:
-                print(f"Текущая длина волны {current_wavelength} не найдена в калибровочном файле!")
-                continue
-
-            z_steps = target_steps_1 - current_steps_1
-            x_steps = target_steps_2 - current_steps_2
-
-            if z_steps != 0:
-                self.printer.go_relative(1, z_steps, 0, 0)
-            if x_steps != 0:
-                self.printer.go_relative(2, x_steps, 0, 0)
-            print(f"Перемещение на длину волны {target_wavelength}: Z-мотор на {z_steps} шагов, X-мотор на {x_steps} шагов")
-
-            self.energymeter.set_wavelength(target_wavelength)
-            self.energymeter.refresh()
-            time.sleep(2.5)
+            self.go_wavelength(target_wavelength)
+            print(f"Перемещение на длину волны {target_wavelength} успешно")
+            current_wavelenght = self.wavemeter.get_wavelength()
+            time.sleep(1)
+            time.sleep(count / 10. + 1.5)
+            wavelength_str = str(current_wavelenght)[:7].replace('.', ',')
+            time.sleep(1)
             energy = self.energymeter.get_average_energy(20) * 1000
-            print(f'Длина волны = {target_wavelength}, энергия = {energy}')
-            file_res.write(f'{target_wavelength}\t{energy}\n')
+            file_res.write(f'{current_wavelength}\t{energy}\n')
+            #file_cal.write(f'{wavelength_str}\t{target_steps_1}\t{target_steps_2}\n')
+            print(f'Получена энергия на длине волны {target_wavelength}')
+            target_wavelength += wavelength_step
+        file_cal.close()
+            
+            #print(f'Длина волны = {target_wavelength}, энергия = {energy}')
+            
 
         file_res.close()
 
@@ -229,8 +209,8 @@ class Spectramaker:
             print("Энергомер не подключен!")
             return
 
-        self.printer.go_home(1)
-        self.printer.go_home(2)
+        #self.printer.go_home(1)
+        #self.printer.go_home(2)
 
         calibration_data = []
         with open('spectrum_5\\calibration_file.txt', 'r') as file:

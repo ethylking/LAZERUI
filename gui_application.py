@@ -58,6 +58,7 @@ class MainWindow(QMainWindow, Design):
         self.goToPushButton.clicked.connect(self.goto_wavelength)
         self.recalibrateButton.clicked.connect(self.recalibrate)
         self.getSpectrumPushButton.clicked.connect(self.get_spectrum)
+        self.getEnergyProfilePushButton.clicked.connect(self.get_energy)
 
         self.spinboxes_limits_init()
 
@@ -274,6 +275,26 @@ class MainWindow(QMainWindow, Design):
             return
         if self.sm.oscilloscope.is_connected == False:
             self.warningWindowLineEdit.setText("Осциллограф не подключен!")
+            return
+        if self.filenameLineEdit.text() == "":
+            self.warningWindowLineEdit.setText("Пустое имя файла!")
+            return
+        folder = self.folderLineEdit.text()
+        average_count = self.averageCountSpinBox.value()
+        wavelength_step = self.wavelengthStepSpinBox.value()
+        wavelength_min = self.wavelengthStartSpinBox.value()
+        wavelength_max = self.wavelengthEndSpinBox.value()
+        self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+                             wavelength_step=wavelength_step, folder=folder)
+        self.warningWindowLineEdit.setText("Эксперимент завершён!")
+
+    @pyqtSlot()
+    def get_energy(self) -> None:
+        if self.sm.printer.is_connected == False:
+            self.warningWindowLineEdit.setText("Мотор не подключен!")
+            return
+        if self.sm.energymeter.is_connected == False:
+            self.warningWindowLineEdit.setText("энергомер не подключен!")
             return
         if self.filenameLineEdit.text() == "":
             self.warningWindowLineEdit.setText("Пустое имя файла!")
