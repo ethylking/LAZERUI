@@ -34,6 +34,7 @@ class MainWindow(QMainWindow, Design):
         self.goToSpinBox: QtWidgets.QDoubleSpinBox = self.goToSpinBox
         self.goToPushButton: QPushButton = self.goToPushButton
         self.averageCountSpinBox: QtWidgets.QSpinBox = self.averageCountSpinBox
+        self.InspecEnergy: QtWidgets.QCheckBox = self.InspecEnergy
 
         self.setWindowTitle("Autospectromizer")
         self.show_warning_message('нет сообщений')
@@ -58,6 +59,7 @@ class MainWindow(QMainWindow, Design):
         self.goToPushButton.clicked.connect(self.goto_wavelength)
         self.recalibrateButton.clicked.connect(self.recalibrate)
         self.getSpectrumPushButton.clicked.connect(self.get_spectrum)
+        self.getEnergyProfilePushButton.clicked.connect(self.get_energy)
 
         self.spinboxes_limits_init()
 
@@ -174,6 +176,38 @@ class MainWindow(QMainWindow, Design):
         self.wavelengthStartSpinBox.setMaximum(float(wavelength))
         self.wavelengthEndSpinBox.setMaximum(float(wavelength))
         file.close()
+    
+    def go_relative_with_check(self, id: int, steps: int, target_wavelenght: float):
+        step_number = 1
+        if(abs(steps) <= 4000 and id !=1):
+            step_number = 5
+        elif (abs(steps) > 4000 and id !=1 and abs(steps) <= 12000): 
+            step_number = 20
+        elif(abs(steps) > 12000 and id !=1):
+            step_number = 50
+        if not self.sm.printer.is_connected:
+            print("Устройство не подключено!")
+            return
+        step_tmp = steps/step_number
+        
+        while (abs(step_tmp) <= abs(steps)):
+            mm_distance = -(steps/step_number) * self.sm.printer.mm_to_steps
+            axis = "Z" if id == 1 else "X"
+            self.sm.printer.set_position(axis, mm_distance, speed=50, relative=True)
+            if (abs(step_tmp) > 5000):
+                time.sleep(3.5)
+            if (abs(step_tmp) > 1800):
+                time.sleep(2.2)
+            elif(abs(step_tmp) > 750):
+                time.sleep(1.75)
+            elif(abs(step_tmp) > 350):
+                time.sleep(0.9)
+            else:
+                time.sleep(0.2)
+            current_wavelenght = self.sm.wavemeter.get_wavelength()
+            if (abs(target_wavelenght - current_wavelenght) < 0.5 and abs(target_wavelenght - current_wavelenght) > 0.1):
+                break
+            step_tmp += steps/step_number
 
     @pyqtSlot()
     def goto_wavelength(self) -> None:
@@ -225,9 +259,9 @@ class MainWindow(QMainWindow, Design):
             x_steps = target_steps_2 - current_steps_2
 
             if z_steps != 0:
-                self.sm.printer.go_relative(1, z_steps, 0, 0.0)
+                self.sm.printer.go_relative(1, z_steps)
             if x_steps != 0:
-                self.sm.printer.go_relative(2, x_steps, 1, new_wavelength)
+                self.go_relative_with_check(2, x_steps, new_wavelength)
             x_steps = 0
             z_steps = 0
             if(z_steps > 400 or x_steps > 600):
@@ -283,7 +317,28 @@ class MainWindow(QMainWindow, Design):
         wavelength_step = self.wavelengthStepSpinBox.value()
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
+        inspect_energy = self.InspecEnergy.checkState()
         self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy)
+        self.warningWindowLineEdit.setText("Эксперимент завершён!")
+
+    @pyqtSlot()
+    def get_energy(self) -> None:
+        if self.sm.printer.is_connected == False:
+            self.warningWindowLineEdit.setText("Мотор не подключен!")
+            return
+        if self.sm.energymeter.is_connected == False:
+            self.warningWindowLineEdit.setText("энергомер не подключен!")
+            return
+        if self.filenameLineEdit.text() == "":
+            self.warningWindowLineEdit.setText("Пустое имя файла!")
+            return
+        folder = self.folderLineEdit.text()
+        average_count = self.averageCountSpinBox.value()
+        wavelength_step = self.wavelengthStepSpinBox.value()
+        wavelength_min = self.wavelengthStartSpinBox.value()
+        wavelength_max = self.wavelengthEndSpinBox.value()
+        self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder)
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
