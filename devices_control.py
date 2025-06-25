@@ -2,6 +2,67 @@ from libraries import *
 import serial
 import re
 
+class Motor:
+
+    def __init__(self):
+        self.motors: Serial
+        self.is_connected = False
+
+    def connect(self) -> None:
+        ser = Serial(f'COM{15}', 115200, timeout = 0)
+        self.motors = ser
+        print("Motors connected at ", ser.name)
+
+    
+    def read_data(self) -> list:
+        data = self.motors.readlines()
+        return data
+    
+    def go_home(self, id: int) -> None:
+        self.motors.write(f'HOM{id}=500\r'.encode("utf-8"))
+        time.sleep(0.1)
+        data = self.read_data()
+        self.wait_for_free(id)
+        print(f"Homed {id} succesfully")
+
+    def go_home_both(self) -> None:
+        self.motors.write(f'HOM{1}=500\r'.encode("utf-8"))
+        time.sleep(0.1)
+        self.motors.write(f'HOM{2}=500\r'.encode("utf-8"))
+        self.wait_for_free(1)
+        self.wait_for_free(2)
+        print("Both homed succesfully")
+
+    def get_position(self, id: int) -> int:
+        self.motors.write(f'CUR{id}\r'.encode("utf-8"))
+        time.sleep(0.1)
+        data = int(self.read_data()[1].decode(encoding='UTF-8',errors='strict')[5:-3])
+        return data
+
+    def get_state(self, id: int) -> int:
+        self.motors.write(f'ST{id}\r'.encode("utf-8"))
+        time.sleep(0.2)
+        data = self.read_data()[1].decode(encoding='UTF-8',errors='strict')
+        data = int(data[-4])
+        return data
+
+    def wait_for_free(self, id: int) -> None:
+        time.sleep(0.1)
+        while self.get_state(id) != 0:
+            time.sleep(0.2)
+
+    def go_relative(self, id: int, steps: int) -> None:
+        self.motors.write(f'GR{id}={steps}\r'.encode("utf-8"))
+        time.sleep(0.1)
+        data = self.read_data()
+        self.wait_for_free(id)
+
+    def go_absolute(self, id: int, steps: int) -> None:
+        self.motors.write(f'GA{id}={steps}\r'.encode("utf-8"))
+        time.sleep(0.1)
+        data = self.read_data()
+        self.wait_for_free(id)
+
 class Energiser:
     def __init__(self):
         self.em: Gentec_Maestro

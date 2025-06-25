@@ -35,6 +35,11 @@ class MainWindow(QMainWindow, Design):
         self.goToPushButton: QPushButton = self.goToPushButton
         self.averageCountSpinBox: QtWidgets.QSpinBox = self.averageCountSpinBox
         self.InspecEnergy: QtWidgets.QCheckBox = self.InspecEnergy
+        self.goToSpinBoxSecond: QtWidgets.QDoubleSpinBox = self.goToSpinBoxSecond
+        self.goToPushButtonSecond: QPushButton = self.goToPushButtonSecond
+        self.motorConnectButtonSecond: QPushButton = self.motorConnectButtonSecond
+        self.UseDyeLazerRadioButton: QtWidgets.QAbstractButton = self.UseDyeLazerRadioButton
+        self.UseOPOLazerRadioButton: QtWidgets.QAbstractButton = self.UseOPOLazerRadioButton
 
         self.setWindowTitle("Autospectromizer")
         self.show_warning_message('нет сообщений')
@@ -57,6 +62,7 @@ class MainWindow(QMainWindow, Design):
         self.refreshRateSpinBox.setValue(self.timer.interval())
         self.goHomeButton.clicked.connect(self.go_home_motors)
         self.goToPushButton.clicked.connect(self.goto_wavelength)
+        self.goToPushButtonSecond.clicked.connect(self.goto_wavelength_by_motor)
         self.recalibrateButton.clicked.connect(self.recalibrate)
         self.getSpectrumPushButton.clicked.connect(self.get_spectrum)
         self.getEnergyProfilePushButton.clicked.connect(self.get_energy)
@@ -126,6 +132,17 @@ class MainWindow(QMainWindow, Design):
             self.motorConnectButton.setStyleSheet("background-color: red;")
 
     @pyqtSlot()
+    def motor_connect_second(self) -> None:
+        try:
+            self.sm.motor.connect()
+            self.motorConnectButtonSecond.setStyleSheet("background-color: green;")
+            self.warningWindowLineEdit.setText('motor 2 connected!')
+            self.sm.motor.is_connected = True
+        except:
+            self.warningWindowLineEdit.setText(f'motor 2 not connected')
+            self.motorConnectButtonSecond.setStyleSheet("background-color: red;")
+
+    @pyqtSlot()
     def oscilloscope_connect(self) -> None:
         try:
             self.sm.oscilloscope.connect()
@@ -145,8 +162,12 @@ class MainWindow(QMainWindow, Design):
     def go_home_motors(self) -> None:
         if self.sm.printer.is_connected:
             self.update()
-            self.sm.printer.go_home(1)
-            self.sm.printer.go_home(2)
+            if(self.UseOPOLazerRadioButton.pressed()):
+                self.sm.motor.go_home(1)
+                self.sm.motor.go_home(2)
+            elif(self.UseDyeLazerRadioButton.pressed()):
+                self.sm.printer.go_home(1)
+                self.sm.printer.go_home(2)
             self.warningWindowLineEdit.setText('Моторы в начальном положении!')
             self.goHomeButton.setStyleSheet("background-color: green;")
         else:
@@ -275,23 +296,41 @@ class MainWindow(QMainWindow, Design):
                 if (type(current_wavelength) == float and type(wavelength_tmp) == float and abs(wavelength_tmp - current_wavelength) < 0.01):
                     break
         QMessageBox.information(self, "Успех", f"Перемещение на длину волны {new_wavelength}: Z-мотор на {z_steps} шагов, X-мотор на {x_steps} шагов")
+    
+    @pyqtSlot()
+    def goto_wavelength_by_motor(self) -> None:
+        if self.sm.motor.is_connected == False:
+            pass
+        else:
+            print("here")
+            new_wavelength = self.goToSpinBoxSecond.value()
+            file = open("full_calibration.txt", 'r')
+            for line in file:
+                wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
+                if (float(new_wavelength) == float(wavelength)):
+                    motor_1 = int(line.strip().split('\t')[1])
+                    motor_2 = int(line.strip().split('\t')[2])
+                    self.sm.motor.go_absolute(1, motor_1)
+                    self.sm.motor.go_absolute(2, motor_2)
+                    break
+            file.close()
+
 
     @pyqtSlot()
     def recalibrate(self) -> None:
-        if self.sm.wavemeter.is_connected and self.sm.printer.is_connected:
+        if self.sm.wavemeter.is_connected and self.sm.motor.is_connected:
             real_wavelength = self.wavemeterWavelengthLineEdit.text()
             cal_wavelength = self.calibrationWavelengthLineEdit.text()
-            if (real_wavelength in ['under', 'over'] or cal_wavelength == 'нет калибровки'):
+            if (real_wavelength in ['under', 'over'] or cal_wavelength == 'no calibration here'):
                 return
             else:
                 real_wavelength = int(float(real_wavelength) * 1000)
                 cal_wavelength = int(float(cal_wavelength) * 1000)
-                diff_wave = real_wavelength - cal_wavelength
-                
+                diff = real_wavelength - cal_wavelength
                 file = open("full_calibration.txt", 'r')
                 new_file = open("temp_calibration.txt", 'w')
                 for line in file:
-                    wavelength = (int(float((line.strip().split('\t')[0].replace(',', '.'))[:7]) * 1000) + diff_wave) / 1000
+                    wavelength = (int(float((line.strip().split('\t')[0].replace(',', '.'))[:7]) * 1000) + diff) / 1000
                     motor_1 = int(line.strip().split('\t')[1])
                     motor_2 = int(line.strip().split('\t')[2])
                     new_file.write(f"{str(wavelength)[:7]}\t{motor_1}\t{motor_2}\n")
@@ -318,8 +357,13 @@ class MainWindow(QMainWindow, Design):
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
         inspect_energy = self.InspecEnergy.checkState()
-        self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+        if (self.UseOPOLazerRadioButton.pressed()):
+            self.sm.get_spectrum_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+                             wavelength_step=wavelength_step, folder=folder)
+        elif(self.UseDyeLazerRadioButton.pressed()):
+            self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy)
+        
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
     @pyqtSlot()
@@ -338,8 +382,12 @@ class MainWindow(QMainWindow, Design):
         wavelength_step = self.wavelengthStepSpinBox.value()
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
-        self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                             wavelength_step=wavelength_step, folder=folder)
+        if (self.UseOPOLazerRadioButton.pressed()):
+            self.sm.get_energy_profile_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+                                wavelength_step=wavelength_step, folder=folder)
+        elif(self.UseDyeLazerRadioButton.pressed()):
+            self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
+                                wavelength_step=wavelength_step, folder=folder)
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
 if __name__ == '__main__':

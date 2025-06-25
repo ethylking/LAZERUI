@@ -8,6 +8,7 @@ class Spectramaker:
         self.wavemeter: Wavemeter = Wavemeter()
         self.energymeter: Energiser = Energiser()
         self.oscilloscope: Oscilloscope = Oscilloscope()
+        self.motor: Motor = Motor()
 
     def save_parameters(self, file_wavelength: str, file_energy: str) -> None:
         self.energymeter.refresh()
@@ -276,3 +277,64 @@ class Spectramaker:
                 if (abs(target_wavelenght - current_wavelenght) < 0.5 and abs(target_wavelenght - current_wavelenght) > 0.1):
                     break
                 step_tmp += steps/step_number
+
+
+    def get_spectrum_by_motor(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,\
+                      wavelength_step: float = 0., folder: str = "data") -> None:
+        if (os.path.isdir(folder)):
+            pass
+        else:
+            os.mkdir(folder)
+        self.oscilloscope.set_acquire_average_mode()
+        self.oscilloscope.set_acquire_count(average_count)
+        self.motor.go_home(1)
+        self.motor.go_home(2)
+        count = self.oscilloscope.get_acquire_count()
+        file = open(f'full_calibration.txt', 'r')
+        file_cal = open(f'{folder}\\calibration_file.txt', 'w')
+        for line in file:
+            wave = line.strip().split('\t')[0].replace(',', '.')
+            motor_1 = int(line.strip().split('\t')[1])
+            motor_2 = int(line.strip().split('\t')[2])
+            if float(wave) < wavelength_min:
+                continue
+            if float(wave) > wavelength_max:
+                continue
+            self.motor.go_absolute(1, motor_1)
+            self.motor.go_absolute(2, motor_2)
+            time.sleep(1)
+            wavelength = wave
+            self.oscilloscope.run_acquision()
+            time.sleep(count / 10. + 1.5) # частота лазера, обычно 10 Гц
+            self.oscilloscope.save_file(f'{folder}\\{str(wavelength)[:7]}.txt')
+            file_cal.write(f'{str(wavelength)[:7]}\t{motor_1}\t{motor_2}\n')
+            print('got on ', wavelength)
+            wavelength = float((int(float(wavelength) * 1000) + int(wavelength_step * 1000)) / 1000)
+            wavelength_min = wavelength
+        file.close()
+        file_cal.close()
+
+    def get_energy_profile_by_motor(self, n) -> None:
+        file_1 = open(f'spectrum_5\\energy_profile.txt', 'w')
+        file = open('spectrum_5\\calibration_file.txt', 'r')
+        self.motor.go_home(1)
+        self.motor.go_home(2)
+        for line in file:
+            wave = line.strip().split('\t')[0].replace(',', '.')
+            motor_1 = int(line.strip().split('\t')[1])
+            motor_2 = int(line.strip().split('\t')[2])
+            # if float(wave) < 588.63:
+            #     continue
+            # if float(wave) > 599.251:
+            #     continue
+            self.motor.go_absolute(1, motor_1)
+            self.motor.go_absolute(2, motor_2)
+            self.energymeter.refresh()
+            time.sleep(1)
+            wavelength = self.wavemeter.get_wavelength()
+            self.energymeter.set_wavelength(wavelength / 2)
+            energy = self.energymeter.get_average_energy(30)
+            file_1.write(f'{wavelength}\t{energy * 1000}\n')
+
+        file.close()
+        file_1.close()
