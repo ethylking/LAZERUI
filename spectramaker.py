@@ -8,6 +8,7 @@ class Spectramaker:
         self.wavemeter: Wavemeter = Wavemeter()
         self.energymeter: Energiser = Energiser()
         self.oscilloscope: Oscilloscope = Oscilloscope()
+        self.motor: Motor = Motor()
 
     def save_parameters(self, file_wavelength: str, file_energy: str) -> None:
         self.energymeter.refresh()
