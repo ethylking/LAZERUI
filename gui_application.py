@@ -29,7 +29,9 @@ class MainWindow(QMainWindow, Design):
         self.wavelengthStepSpinBox: QtWidgets.QDoubleSpinBox = self.wavelengthStepSpinBox
         self.goHomeButton: QPushButton = self.goHomeButton
         self.wavemeterWavelengthLineEdit: QtWidgets.QLineEdit = self.wavemeterWavelengthLineEdit
+        self.wavemeterWavelengthLineEdit_2: QtWidgets.QLineEdit = self.wavemeterWavelengthLineEdit_2
         self.calibrationWavelengthLineEdit: QtWidgets.QLineEdit = self.calibrationWavelengthLineEdit
+        self.calibrationWavelengthLineEdit_2: QtWidgets.QLineEdit = self.calibrationWavelengthLineEdit_2
         self.recalibrateButton: QPushButton = self.recalibrateButton
         self.goToSpinBox: QtWidgets.QDoubleSpinBox = self.goToSpinBox
         self.goToPushButton: QPushButton = self.goToPushButton
@@ -83,8 +85,13 @@ class MainWindow(QMainWindow, Design):
 
         if self.sm.wavemeter.is_connected:
             self.wavemeterWavelengthLineEdit.setText(str(self.sm.wavemeter.get_wavelength(force=True))[0:7])
-        #if self.sm.printer.is_connected:
-            #self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
+            self.wavemeterWavelengthLineEdit_2.setText(str(self.sm.wavemeter.get_wavelength(force=True))[0:7])
+        #if (self.sm.printer.is_connected and self.UseDyeLazerRadioButton.isChecked() == 1):
+         #   self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
+          #  self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
+        if (self.sm.motor.is_connected and self.UseOPOLazerRadioButton.isChecked() == 1):
+            self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
+            self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
 
     def real_talk(self) -> None:
         self.pushButton.setText("Clicked!")
@@ -164,10 +171,10 @@ class MainWindow(QMainWindow, Design):
     def go_home_motors(self) -> None:
         if self.sm.printer.is_connected:
             self.update()
-            if(self.UseOPOLazerRadioButton.pressed()):
+            if(self.UseOPOLazerRadioButton.isDown()):
                 self.sm.motor.go_home(1)
                 self.sm.motor.go_home(2)
-            elif(self.UseDyeLazerRadioButton.pressed()):
+            elif(self.UseDyeLazerRadioButton.isDown()):
                 self.sm.printer.go_home(1)
                 self.sm.printer.go_home(2)
             self.warningWindowLineEdit.setText('Моторы в начальном положении!')
@@ -176,7 +183,10 @@ class MainWindow(QMainWindow, Design):
             self.goHomeButton.setStyleSheet("background-color: red;")
 
     def translate_to_wavelength(self, x: int) -> str:
-        file = open("full_calibration.txt", 'r')
+        if (self.UseDyeLazerRadioButton.isChecked() == 1):
+            file = open("full_calibration.txt", 'r')
+        elif (self.UseOPOLazerRadioButton.isChecked() == 1):
+            file = open("full_calibration_OPO.txt", 'r')
         for line in file:
             motor_1 = int(line.strip().split('\t')[2])
             if motor_1 == x:
@@ -186,19 +196,33 @@ class MainWindow(QMainWindow, Design):
         return "нет калибровки"
 
     def spinboxes_limits_init(self) -> None:
-        file = open("full_calibration.txt", 'r')
         k = 0
-        for line in file:
-            wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
-            if k == 0:
-                self.goToSpinBox.setMinimum(float(wavelength))
-                self.wavelengthStartSpinBox.setMinimum(float(wavelength))
-                self.wavelengthEndSpinBox.setMinimum(float(wavelength))
-                k+=1
-        self.goToSpinBox.setMaximum(float(wavelength))
-        self.wavelengthStartSpinBox.setMaximum(float(wavelength))
-        self.wavelengthEndSpinBox.setMaximum(float(wavelength))
-        file.close()
+        if (self.UseDyeLazerRadioButton.isChecked() == 1):
+            file = open("full_calibration.txt", 'r')
+            for line in file:
+                wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
+                if k == 0:
+                    self.goToSpinBox.setMinimum(float(wavelength))
+                    self.wavelengthStartSpinBox.setMinimum(float(wavelength))
+                    self.wavelengthEndSpinBox.setMinimum(float(wavelength))
+                    k+=1
+            self.goToSpinBox.setMaximum(float(wavelength))
+            self.wavelengthStartSpinBox.setMaximum(float(wavelength))
+            self.wavelengthEndSpinBox.setMaximum(float(wavelength))
+            file.close()
+        elif (self.UseOPOLazerRadioButton.isChecked() == 1):
+            file = open("full_calibration_OPO.txt", 'r')
+            for line in file:
+                wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
+                if k == 0:
+                    self.goToSpinBox.setMinimum(float(wavelength))
+                    self.wavelengthStartSpinBox.setMinimum(float(wavelength))
+                    self.wavelengthEndSpinBox.setMinimum(float(wavelength))
+                    k+=1
+            self.goToSpinBox.setMaximum(float(wavelength))
+            self.wavelengthStartSpinBox.setMaximum(float(wavelength))
+            self.wavelengthEndSpinBox.setMaximum(float(wavelength))
+            file.close()
     
     def go_relative_with_check(self, id: int, steps: int, target_wavelenght: float):
         step_number = 1
@@ -263,7 +287,8 @@ class MainWindow(QMainWindow, Design):
         target_steps_2 = 0
         found_current = False
         found_target = False
-        while (abs(new_wavelength - current_wavelength) > 0.005):
+        z_check = 0
+        while (abs(new_wavelength - current_wavelength) > 0.01):
             for wavelength_val, steps_1, steps_2 in calibration_data:
                 if abs(wavelength_val - current_wavelength) < 0.001:
                     current_steps_1 = steps_1
@@ -281,8 +306,9 @@ class MainWindow(QMainWindow, Design):
             z_steps = target_steps_1 - current_steps_1
             x_steps = target_steps_2 - current_steps_2
 
-            if z_steps != 0:
+            if z_steps != 0 and z_check != 1:
                 self.sm.printer.go_relative(1, z_steps)
+                z_check += 1
             if x_steps != 0:
                 self.go_relative_with_check(2, x_steps, new_wavelength)
             x_steps = 0
@@ -306,10 +332,12 @@ class MainWindow(QMainWindow, Design):
         else:
             print("here")
             new_wavelength = self.goToSpinBoxSecond.value()
-            file = open("full_calibration.txt", 'r')
+            file = open("full_calibration_OPO.txt", 'r')
             for line in file:
                 wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
+                print(f"current file wavelenght: {wavelength}\n")
                 if (float(new_wavelength) == float(wavelength)):
+                    print("bebebe")
                     motor_1 = int(line.strip().split('\t')[1])
                     motor_2 = int(line.strip().split('\t')[2])
                     self.sm.motor.go_absolute(1, motor_1)
@@ -329,8 +357,8 @@ class MainWindow(QMainWindow, Design):
                 real_wavelength = int(float(real_wavelength) * 1000)
                 cal_wavelength = int(float(cal_wavelength) * 1000)
                 diff = real_wavelength - cal_wavelength
-                file = open("full_calibration.txt", 'r')
-                new_file = open("temp_calibration.txt", 'w')
+                file = open("full_calibration_OPO.txt", 'r')
+                new_file = open("temp_calibration_OPO.txt", 'w')
                 for line in file:
                     wavelength = (int(float((line.strip().split('\t')[0].replace(',', '.'))[:7]) * 1000) + diff) / 1000
                     motor_1 = int(line.strip().split('\t')[1])
@@ -338,8 +366,8 @@ class MainWindow(QMainWindow, Design):
                     new_file.write(f"{str(wavelength)[:7]}\t{motor_1}\t{motor_2}\n")
                 file.close()
                 new_file.close()
-                os.remove('full_calibration.txt')
-                os.rename('temp_calibration.txt', 'full_calibration.txt')
+                os.remove('full_calibration_OPO.txt')
+                os.rename('temp_calibration_OPO.txt', 'full_calibration_OPO.txt')
                 self.spinboxes_limits_init()
 
     @pyqtSlot()
@@ -358,11 +386,11 @@ class MainWindow(QMainWindow, Design):
         wavelength_step = self.wavelengthStepSpinBox.value()
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
-        inspect_energy = self.InspecEnergy.checkState()
-        if (self.UseOPOLazerRadioButton.pressed()):
+        inspect_energy = self.InspecEnergy.isChecked()
+        if (self.UseOPOLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder)
-        elif(self.UseDyeLazerRadioButton.pressed()):
+        elif(self.UseDyeLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy)
         
@@ -384,10 +412,10 @@ class MainWindow(QMainWindow, Design):
         wavelength_step = self.wavelengthStepSpinBox.value()
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
-        if (self.UseOPOLazerRadioButton.pressed()):
+        if (self.UseOPOLazerRadioButton.isDown()):
             self.sm.get_energy_profile_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                                 wavelength_step=wavelength_step, folder=folder)
-        elif(self.UseDyeLazerRadioButton.pressed()):
+        elif(self.UseDyeLazerRadioButton.isDown()):
             self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                                 wavelength_step=wavelength_step, folder=folder)
         self.warningWindowLineEdit.setText("Эксперимент завершён!")

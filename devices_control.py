@@ -9,7 +9,7 @@ class Motor:
         self.is_connected = False
 
     def connect(self) -> None:
-        ser = Serial(f'COM{15}', 115200, timeout = 0)
+        ser = Serial(f'COM{30}', 115200, timeout = 0)
         self.motors = ser
         print("Motors connected at ", ser.name)
 

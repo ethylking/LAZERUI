@@ -9,13 +9,15 @@ class Spectramaker:
         self.energymeter: Energiser = Energiser()
         self.oscilloscope: Oscilloscope = Oscilloscope()
         self.motor: Motor = Motor()
+        self.max_wavelength = 450
+        self.step = 500
 
     def save_parameters(self, file_wavelength: str, file_energy: str) -> None:
         self.energymeter.refresh()
         time.sleep(1)
-        print(f'Сохранение энергии: {self.energymeter.get_average_energy(10)}')
+        print('saving energy ', self.energymeter.get_average_energy(10))
         wavelength = str(self.wavemeter.get_wavelength()).replace('.', ',')[0:7]
-        file_wavelength.write(f'{self.printer.get_steps_position(1)}/{wavelength}/{self.printer.get_steps_position(2)}/1\n')
+        file_wavelength.write(f'{self.motor.get_position(1)}/{wavelength}/{self.motor.get_position(2)}/1\n')
         file_energy.write(f'{wavelength}\t{self.energymeter.get_average_energy(20)}\n')
 
     def go_until(self, id: int, target_wavelength: float, step: int = 10) -> None:
@@ -82,7 +84,45 @@ class Spectramaker:
             
 
         res_file.close()
-
+    
+    def energy_peak_check(self):
+        z_step = 10
+        current_energy = self.energymeter.get_average_energy(20) * 1000
+        self.printer.go_relative(1, z_step)
+        next_energy = self.energymeter.get_average_energy(20) * 1000
+        self.printer.go_relative(1, -2*z_step)
+        prev_energy = self.energymeter.get_average_energy(20) * 1000
+        self.printer.go_relative(1, z_step)
+        energy_1 = 0
+        energy_2 = 0
+        current_steps_z = 0
+        rude_energy_limit = 0.00002
+        middle_energy_limit = 0.0001
+        precize_energy_limit = 0.00016
+        while True:
+            current_steps_z += z_step
+            time.sleep(1)
+            currrent_energy = self.energymeter.get_average_energy(20)
+            if currrent_energy > 0 and currrent_energy < rude_energy_limit:
+                z_step = 100
+            if currrent_energy > rude_energy_limit and currrent_energy < middle_energy_limit:
+                z_step = 10
+            if currrent_energy > precize_energy_limit:
+                z_step = 4
+                print(f"Поиск пика энергии, Z-мотор: {current_steps_z} шагов, энергия: {currrent_energy}")
+                if energy_1 < energy_2 and currrent_energy < energy_1 and energy_2 > 0:
+                    #self.printer.go_relative(1, -10 * z_step)
+                    current_steps_z -= 10 * z_step
+                    break
+                energy_2 = energy_1
+                energy_1 = currrent_energy 
+            if (prev_energy >  current_energy):
+                z_step = -z_step
+            elif(next_energy > current_energy):
+                z_step = z_step
+            else:
+                break
+            self.printer.go_relative(1, z_step)  
     def go_wavelength(self, wavelength_goal: float) -> None:
         if not self.printer.is_connected:
             print("Принтер не подключен!")
@@ -173,21 +213,24 @@ class Spectramaker:
                 calibration_data.append((wavelength, motor_1_steps, motor_2_steps))
 
         file_cal = open(f'{folder}\\calibration_file.txt', 'w')
+        
         res_file = open(f'{folder}\\{wavelength_min}-{wavelength_max}_energy_profile.txt', 'w')
         target_wavelength = wavelength_min
         while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
                 
 
             self.go_wavelength(target_wavelength)
+            self.energy_peak_check()
             print(f"Перемещение на длину волны {target_wavelength} успешно")
             current_wavelenght = self.wavemeter.get_wavelength()
             time.sleep(1)
             self.oscilloscope.run_acquision()
-            time.sleep(count / 10. + 1.5)
+            time.sleep(count / 5. + 2)
             wavelength_str = str(current_wavelenght)[:7].replace('.', ',')
             self.oscilloscope.save_file(f'{folder}\\{wavelength_str}.txt')
             energy = self.energymeter.get_average_energy(20) * 1000
-            res_file.write(f'{wavelength_str}\t{energy}\n')
+            if(inspect_energy != 0):
+                res_file.write(f'{wavelength_str}\t{energy}\n')
             #file_cal.write(f'{wavelength_str}\t{target_steps_1}\t{target_steps_2}\n')
             print(f'Получен спектр на длине волны {target_wavelength}')
             target_wavelength += wavelength_step
@@ -287,11 +330,11 @@ class Spectramaker:
             os.mkdir(folder)
         self.oscilloscope.set_acquire_average_mode()
         self.oscilloscope.set_acquire_count(average_count)
-        self.motor.go_home(1)
-        self.motor.go_home(2)
+        #self.motor.go_home(1)
+        #self.motor.go_home(2)
         count = self.oscilloscope.get_acquire_count()
-        file = open(f'full_calibration.txt', 'r')
-        file_cal = open(f'{folder}\\calibration_file.txt', 'w')
+        file = open(f'full_calibration_OPO.txt', 'r')
+        file_cal = open(f'{folder}\\calibration_file_OPO.txt', 'w')
         for line in file:
             wave = line.strip().split('\t')[0].replace(',', '.')
             motor_1 = int(line.strip().split('\t')[1])
@@ -338,3 +381,54 @@ class Spectramaker:
 
         file.close()
         file_1.close()
+
+    def calibrate(self) -> None:
+        self.max_wavwlenght = 75
+        file_wavelength = open('calibration\\file_wavelength.txt', 'w')
+        file_energy = open('calibration\\file_energy.txt', 'w')
+        #self.motor.go_home_both()
+        #self.motor.go_relative(1,69280)
+        # self.motor.go_relative(2, 87960)
+        time.sleep(5)
+        wavelength = self.wavemeter.get_wavelength()
+
+        self.energymeter.set_wavelength(wavelength / 2)
+        self.energymeter.refresh()
+        # self.go_until(1, target_wavelength=self.min_wavelength, step=self.step)
+        sh_energy = self.energymeter.get_average_energy(10)
+        while self.wavemeter.get_wavelength() < self.max_wavelength:
+            self.energymeter.refresh()
+            wavelength = self.wavemeter.get_wavelength()
+            if(wavelength > 630.150):
+                while input('Поменяйте положение зеркала и напечатайте \'next\': ') != 'next':
+                    continue
+            self.energymeter.set_wavelength(wavelength / 2)
+            time.sleep(2)
+            sh_energy = self.energymeter.get_average_energy(10)
+            while sh_energy < 10**-4:
+                self.motor.go_relative(2, 30)
+                sh_energy = self.energymeter.get_average_energy(10)
+                print(sh_energy)
+            energy_down = 0
+            while True:
+                old_energy = sh_energy
+                self.motor.go_relative(2, 10)
+                print(self.motor.get_position(2))
+                sh_energy = self.energymeter.get_average_energy(30)
+                print(sh_energy)
+                if sh_energy < old_energy:
+                    if energy_down == 1:
+                        self.motor.go_relative(2, -2000)
+                        self.motor.go_relative(2, 1980)
+                        self.save_parameters(file_wavelength, file_energy)
+                        break # end of iteration
+                    else:
+                        energy_down = 1
+                else:
+                    energy_down = 0
+            self.motor.go_relative(1, self.step)
+            print('нексиль')
+        file_wavelength.close()
+        file_energy.close() 
+
+
