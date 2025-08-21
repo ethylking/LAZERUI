@@ -58,7 +58,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -140,7 +140,7 @@
         <x>10</x>
         <y>120</y>
         <width>75</width>
-        <height>51</height>
+        <height>54</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -236,57 +236,6 @@
        <string>refresh rate (msec)</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="getEnergyProfilePushButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>40</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>get energy profile</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="getSpectrumPushButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>110</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>get spectrum</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="InspecEnergy">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>150</y>
-        <width>131</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Измерить энергию</string>
-      </property>
-     </widget>
      <widget class="QLineEdit" name="filenameLineEdit">
       <property name="geometry">
        <rect>
@@ -323,7 +272,7 @@
        </rect>
       </property>
       <property name="layoutDirection">
-       <enum>Qt::LayoutDirection::LeftToRight</enum>
+       <enum>Qt::LeftToRight</enum>
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
@@ -397,19 +346,6 @@
        <string>Current wavelength (wavemeter)</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="FirstHarmonicEnergy">
-      <property name="geometry">
-       <rect>
-        <x>220</x>
-        <y>80</y>
-        <width>141</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Энергия 1 гармоники</string>
-      </property>
-     </widget>
      <widget class="QDoubleSpinBox" name="EnergyAccurace">
       <property name="geometry">
        <rect>
@@ -447,6 +383,105 @@
       <property name="text">
        <string>Energy accurace</string>
       </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>10</y>
+        <width>151</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>Frequency</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="FrequencySpinBox">
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="minimum">
+          <double>400.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>1000.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.001000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>130</y>
+        <width>151</width>
+        <height>52</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QPushButton" name="getSpectrumPushButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>get spectrum</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="InspecEnergy">
+         <property name="text">
+          <string>Измерить энергию</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>70</y>
+        <width>151</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QPushButton" name="getEnergyProfilePushButton">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="autoFillBackground">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>get energy profile</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="FirstHarmonicEnergy">
+         <property name="text">
+          <string>Энергия 1 гармоники</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
@@ -678,7 +713,7 @@
        <item>
         <widget class="QLabel" name="label_16">
          <property name="text">
-          <string>Z Motor steps</string>
+          <string>Motor ot the BBO</string>
          </property>
         </widget>
        </item>
@@ -707,7 +742,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>X Motor steps</string>
+          <string>Motor on the grid</string>
          </property>
         </widget>
        </item>
@@ -722,6 +757,19 @@
         </widget>
        </item>
       </layout>
+     </widget>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>140</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>1000 steps ~ 0.5 nm</string>
+      </property>
      </widget>
     </widget>
    </widget>

@@ -48,7 +48,12 @@ class MainWindow(QMainWindow, Design):
         self.GoSteps_MotorZ: QPushButton = self.GoSteps_MotorZ
         self.FirstHarmonicEnergy: QtWidgets.QCheckBox = self.FirstHarmonicEnergy
         self.EnergyAccurace: QtWidgets.QDoubleSpinBox = self.EnergyAccurace
+        self.FrequencySpinBox: QtWidgets.QDoubleSpinBox = self.FrequencySpinBox
 
+        self.Steps_MotorX.setMinimum(-1000)
+        self.Steps_MotorX.setMaximum(1000)
+        self.Steps_MotorZ.setMinimum(-1000)
+        self.Steps_MotorZ.setMaximum(1000)
         self.setWindowTitle("Autospectromizer")
         self.show_warning_message('нет сообщений')
         self.pushButton.clicked.connect(self.real_talk)
@@ -59,6 +64,7 @@ class MainWindow(QMainWindow, Design):
         self.oscilloscopeConnectButton.setStyleSheet("background-color: red;")
         self.wavemeterConnectButton.clicked.connect(self.wavemeter_connect)
         self.refreshRateSpinBox.valueChanged.connect(self.change_refresh_rate)
+        self.FrequencySpinBox.valueChanged.connect(self.change_frequency)
         self.energymeterConnectButton.clicked.connect(self.energymeter_connect)
         self.wavemeterConnectButton.clicked.connect(self.wavemeter_connect)
         self.motorConnectButton.clicked.connect(self.motor_connect)
@@ -103,6 +109,10 @@ class MainWindow(QMainWindow, Design):
 
     def real_talk(self) -> None:
         self.pushButton.setText("Clicked!")
+
+    @pyqtSlot()
+    def change_frequency(self):
+        self.sm.set_frequency(self.FrequencySpinBox.value())
 
     @pyqtSlot()
     def change_refresh_rate(self) -> None:
@@ -423,10 +433,10 @@ class MainWindow(QMainWindow, Design):
         wavelength_max = self.wavelengthEndSpinBox.value()
         energy_limit = self.EnergyAccurace.value()
         first_harmonic_energy = self.FirstHarmonicEnergy.isChecked()
-        if (self.UseOPOLazerRadioButton.isDown()):
+        if (self.UseOPOLazerRadioButton.isChecked()):
             self.sm.get_energy_profile_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                                 wavelength_step=wavelength_step, folder=folder)
-        elif(self.UseDyeLazerRadioButton.isDown()):
+        elif(self.UseDyeLazerRadioButton.isChecked()):
             self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                                 wavelength_step=wavelength_step, folder=folder, first_harmonic_energy = first_harmonic_energy, energy_limit = energy_limit)
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
