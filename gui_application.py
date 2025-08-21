@@ -42,6 +42,12 @@ class MainWindow(QMainWindow, Design):
         self.motorConnectButtonSecond: QPushButton = self.motorConnectButtonSecond
         self.UseDyeLazerRadioButton: QtWidgets.QAbstractButton = self.UseDyeLazerRadioButton
         self.UseOPOLazerRadioButton: QtWidgets.QAbstractButton = self.UseOPOLazerRadioButton
+        self.Steps_MotorX: QtWidgets.QSpinBox = self.Steps_MotorX
+        self.Steps_MotorZ: QtWidgets.QSpinBox = self.Steps_MotorZ
+        self.GoSteps_MotorX: QPushButton = self.GoSteps_MotorX
+        self.GoSteps_MotorZ: QPushButton = self.GoSteps_MotorZ
+        self.FirstHarmonicEnergy: QtWidgets.QCheckBox = self.FirstHarmonicEnergy
+        self.EnergyAccurace: QtWidgets.QDoubleSpinBox = self.EnergyAccurace
 
         self.setWindowTitle("Autospectromizer")
         self.show_warning_message('нет сообщений')
@@ -64,6 +70,8 @@ class MainWindow(QMainWindow, Design):
         self.setMaximumSize(1800,800)
         self.timer.start(1000)
         self.refreshRateSpinBox.setValue(self.timer.interval())
+        self.GoSteps_MotorX.clicked.connect(self.go_by_steps_motorX)
+        self.GoSteps_MotorZ.clicked.connect(self.go_by_steps_motorZ)
         self.goHomeButton.clicked.connect(self.go_home_motors)
         self.goToPushButton.clicked.connect(self.goto_wavelength)
         self.goToPushButtonSecond.clicked.connect(self.goto_wavelength_by_motor)
@@ -387,12 +395,13 @@ class MainWindow(QMainWindow, Design):
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
         inspect_energy = self.InspecEnergy.isChecked()
+        energy_limit = self.EnergyAccurace.value()
         if (self.UseOPOLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder)
         elif(self.UseDyeLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy)
+                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = energy_limit)
         
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
@@ -412,13 +421,26 @@ class MainWindow(QMainWindow, Design):
         wavelength_step = self.wavelengthStepSpinBox.value()
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
+        energy_limit = self.EnergyAccurace.value()
+        first_harmonic_energy = self.FirstHarmonicEnergy.isChecked()
         if (self.UseOPOLazerRadioButton.isDown()):
             self.sm.get_energy_profile_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                                 wavelength_step=wavelength_step, folder=folder)
         elif(self.UseDyeLazerRadioButton.isDown()):
             self.sm.get_energy_profile(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                                wavelength_step=wavelength_step, folder=folder)
+                                wavelength_step=wavelength_step, folder=folder, first_harmonic_energy = first_harmonic_energy, energy_limit = energy_limit)
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
+    
+    @pyqtSlot()
+    def go_by_steps_motorX(self):
+        steps = self.Steps_MotorX.value()
+        self.sm.printer.go_relative(2 , steps)
+
+    @pyqtSlot()
+    def go_by_steps_motorZ(self):
+        steps = self.Steps_MotorZ.value()
+        self.sm.printer.go_relative(1 , steps)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

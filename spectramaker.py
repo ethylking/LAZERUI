@@ -67,7 +67,7 @@ class Spectramaker:
         while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
                 
 
-            self.go_wavelength(target_wavelength)
+            self.go_wavelength(target_wavelength, True)
             print(f"Перемещение на длину волны {target_wavelength} успешно")
             current_wavelenght = self.wavemeter.get_wavelength()
             time.sleep(1)
@@ -85,7 +85,7 @@ class Spectramaker:
 
         res_file.close()
     
-    def energy_peak_check(self):
+    def energy_peak_check(self, energy_limit: float):
         z_step = 10
         current_energy = self.energymeter.get_average_energy(20) * 1000
         self.printer.go_relative(1, z_step)
@@ -96,9 +96,9 @@ class Spectramaker:
         energy_1 = 0
         energy_2 = 0
         current_steps_z = 0
-        rude_energy_limit = 0.00002
-        middle_energy_limit = 0.0001
-        precize_energy_limit = 0.00016
+        rude_energy_limit = energy_limit
+        middle_energy_limit = energy_limit*5
+        precize_energy_limit = energy_limit*16
         while True:
             current_steps_z += z_step
             time.sleep(1)
@@ -123,7 +123,7 @@ class Spectramaker:
             else:
                 break
             self.printer.go_relative(1, z_step)  
-    def go_wavelength(self, wavelength_goal: float) -> None:
+    def go_wavelength(self, wavelength_goal: float, using_BBO_motor: bool) -> None:
         if not self.printer.is_connected:
             print("Принтер не подключен!")
             return
@@ -167,7 +167,7 @@ class Spectramaker:
             z_steps = target_steps_1 - current_steps_1
             x_steps = target_steps_2 - current_steps_2
 
-            if z_steps != 0:
+            if z_steps != 0 and using_BBO_motor == True:
                 self.printer.go_relative(1, z_steps)
             if x_steps != 0:
                 self.go_relative_with_check(2, x_steps, wavelength_goal)
@@ -186,7 +186,7 @@ class Spectramaker:
         print(f"Перемещение на длину волны {wavelength_goal}: Z-мотор на {z_steps} шагов, X-мотор на {x_steps} шагов")
 
     def get_spectrum(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,
-                     wavelength_step: float = 0., folder: str = "data", inspect_energy: int = 0) -> None:
+                     wavelength_step: float = 0., folder: str = "data", inspect_energy: int = 0, first_harmonic_energy: int = 0, energy_limit: float) -> None:
         if not self.printer.is_connected:
             print("Принтер не подключен!")
             return
@@ -217,10 +217,9 @@ class Spectramaker:
         res_file = open(f'{folder}\\{wavelength_min}-{wavelength_max}_energy_profile.txt', 'w')
         target_wavelength = wavelength_min
         while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
-                
-
-            self.go_wavelength(target_wavelength)
-            self.energy_peak_check()
+            self.energymeter.ser_wavelenght(target_wavelenght)
+            self.go_wavelength(target_wavelength, True)
+            self.energy_peak_check(energy_limit)
             print(f"Перемещение на длину волны {target_wavelength} успешно")
             current_wavelenght = self.wavemeter.get_wavelength()
             time.sleep(1)
@@ -246,12 +245,9 @@ class Spectramaker:
         self.oscilloscope.save_file(f'spectrum_5\\only_dye_312.15_end_1.35mJ.txt')
 
     def get_energy_profile(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,
-                     wavelength_step: float = 0., folder: str = "data") -> None:
+                     wavelength_step: float = 0., folder: str = "data", first_harmonic_energy: int = 0, energy_limit: float) -> None:
         if not self.printer.is_connected:
             print("Принтер не подключен!")
-            return
-        if not self.wavemeter.is_connected:
-            print("Измеритель длины волны не подключен!")
             return
         if not self.energymeter.is_connected:
             print("Энергомер не подключен!")
@@ -269,9 +265,12 @@ class Spectramaker:
         file_cal = open(f'{folder}\\calibration_file.txt', 'w')
         target_wavelength = wavelength_min
         while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
-                
-
-            self.go_wavelength(target_wavelength)
+            self.energymeter.ser_wavelenght(target_wavelenght)
+            if (first_harmonic_energy == 0):
+                self.go_wavelength(target_wavelength, True)
+                self.energy_peak_check(energy_limit)
+            else:
+                self.go_wavelength(target_wavelength, False)
             print(f"Перемещение на длину волны {target_wavelength} успешно")
             current_wavelenght = self.wavemeter.get_wavelength()
             time.sleep(1)
@@ -282,6 +281,8 @@ class Spectramaker:
             #file_cal.write(f'{wavelength_str}\t{target_steps_1}\t{target_steps_2}\n')
             print(f'Получена энергия на длине волны {target_wavelength}')
             target_wavelength += wavelength_step
+
+        
         file_cal.close()
             
             #print(f'Длина волны = {target_wavelength}, энергия = {energy}')
