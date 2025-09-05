@@ -6,7 +6,7 @@ class Motor:
 
     def __init__(self):
         self.motors: Serial
-        self.is_connected = False
+        self.is_connected = False 
 
     def connect(self) -> None:
         ser = Serial(f'COM{30}', 115200, timeout = 0)
@@ -49,13 +49,13 @@ class Motor:
     def wait_for_free(self, id: int) -> None:
         time.sleep(0.1)
         while self.get_state(id) != 0:
-            time.sleep(0.2)
+            time.sleep(0.5)
 
     def go_relative(self, id: int, steps: int) -> None:
         self.motors.write(f'GR{id}={steps}\r'.encode("utf-8"))
         time.sleep(0.1)
         data = self.read_data()
-        self.wait_for_free(id)
+        #self.wait_for_free(id)
 
     def go_absolute(self, id: int, steps: int) -> None:
         self.motors.write(f'GA{id}={steps}\r'.encode("utf-8"))

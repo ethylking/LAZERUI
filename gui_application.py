@@ -104,7 +104,6 @@ class MainWindow(QMainWindow, Design):
          #   self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
           #  self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
         if (self.sm.motor.is_connected and self.UseOPOLazerRadioButton.isChecked() == 1):
-            self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
             self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
 
     def real_talk(self) -> None:
@@ -112,7 +111,8 @@ class MainWindow(QMainWindow, Design):
 
     @pyqtSlot()
     def change_frequency(self):
-        self.sm.set_frequency(self.FrequencySpinBox.value())
+        pass
+        # self.sm.set_frequency(self.FrequencySpinBox.value())
 
     @pyqtSlot()
     def change_refresh_rate(self) -> None:
@@ -233,11 +233,11 @@ class MainWindow(QMainWindow, Design):
             for line in file:
                 wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
                 if k == 0:
-                    self.goToSpinBox.setMinimum(float(wavelength))
+                    self.goToSpinBoxSecond.setMinimum(float(wavelength))
                     self.wavelengthStartSpinBox.setMinimum(float(wavelength))
                     self.wavelengthEndSpinBox.setMinimum(float(wavelength))
                     k+=1
-            self.goToSpinBox.setMaximum(float(wavelength))
+            self.goToSpinBoxSecond.setMaximum(float(wavelength))
             self.wavelengthStartSpinBox.setMaximum(float(wavelength))
             self.wavelengthEndSpinBox.setMaximum(float(wavelength))
             file.close()
@@ -349,26 +349,62 @@ class MainWindow(QMainWindow, Design):
             pass
         else:
             print("here")
+            step = 50
+            # file = open("full_calibration_OPO.txt", 'r')
+            # for line in file:
+            #     wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
+            #     if (float(new_wavelength) == float(wavelength)):
+            #         print("bebebe")
+            #         motor_1 = int(line.strip().split('\t')[1])
+            #         motor_2 = int(line.strip().split('\t')[2])
+            #         self.sm.motor.go_absolute(1, motor_1)
+            #         self.sm.motor.go_absolute(2, motor_2)
+            #         break
+            # file.close()
+            current_wavelength = self.sm.wavemeter.get_wavelength()
+            self.sm.motor.go_relative(1, step)
+            time.sleep(2)
+            for_test_current_wavelength = self.sm.wavemeter.get_wavelength()
             new_wavelength = self.goToSpinBoxSecond.value()
-            file = open("full_calibration_OPO.txt", 'r')
-            for line in file:
-                wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
-                print(f"current file wavelenght: {wavelength}\n")
-                if (float(new_wavelength) == float(wavelength)):
-                    print("bebebe")
-                    motor_1 = int(line.strip().split('\t')[1])
-                    motor_2 = int(line.strip().split('\t')[2])
-                    self.sm.motor.go_absolute(1, motor_1)
-                    self.sm.motor.go_absolute(2, motor_2)
+            diff_wavelength = abs(new_wavelength - current_wavelength)
+            right_way = True
+            if (abs(new_wavelength - for_test_current_wavelength) > diff_wavelength):
+                right_way = False
+            up = False
+            down = False
+            if (new_wavelength > current_wavelength):
+                up = True
+            if (new_wavelength < current_wavelength):
+                down = True
+            while (abs(diff_wavelength) > 0.01):
+                current_wavelength = self.sm.wavemeter.get_wavelength()
+                time.sleep(1)
+                diff_wavelength = abs(new_wavelength - current_wavelength)
+                if (diff_wavelength > 100):
+                    step = 500
+                if (diff_wavelength < 20):
+                    step = 300
+                if (diff_wavelength <= 5):
+                    step = 30
+                if (diff_wavelength <= 0.2):
+                    step = 5
+                if (right_way == False):
+                    step = -step
+                self.sm.motor.go_relative(1, step)
+                self.sm.motor.wait_for_free(1)
+                self.sm.motor.go_relative(2, step)
+                #self.sm.motor.wait_for_free(2)
+                if ((up and (new_wavelength < current_wavelength)) or (down and (new_wavelength > current_wavelength))):
                     break
-            file.close()
+            right_way = True
 
+                
 
     @pyqtSlot()
     def recalibrate(self) -> None:
         if self.sm.wavemeter.is_connected and self.sm.motor.is_connected:
-            real_wavelength = self.wavemeterWavelengthLineEdit.text()
-            cal_wavelength = self.calibrationWavelengthLineEdit.text()
+            real_wavelength = self.wavemeterWavelengthLineEdit_2.text()
+            cal_wavelength = self.calibrationWavelengthLineEdit_2.text()
             if (real_wavelength in ['under', 'over'] or cal_wavelength == 'no calibration here'):
                 return
             else:
@@ -405,13 +441,13 @@ class MainWindow(QMainWindow, Design):
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
         inspect_energy = self.InspecEnergy.isChecked()
-        energy_limit = self.EnergyAccurace.value()
+        # energy_limit = self.EnergyAccurace.value()
         if (self.UseOPOLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
                              wavelength_step=wavelength_step, folder=folder)
         elif(self.UseDyeLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = energy_limit)
+                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = 0.0002)
         
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
