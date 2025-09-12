@@ -343,13 +343,22 @@ class MainWindow(QMainWindow, Design):
                     break
         QMessageBox.information(self, "Успех", f"Перемещение на длину волны {new_wavelength}: Z-мотор на {z_steps} шагов, X-мотор на {x_steps} шагов")
     
+    def get_average_wavelength(self):
+        average_energy = 0
+        for i in range(4):
+            average_energy += self.sm.wavemeter.get_wavelength()
+            time.sleep(0.2)
+        return average_energy / 4
+        
+
+    
     @pyqtSlot()
     def goto_wavelength_by_motor(self) -> None:
         if self.sm.motor.is_connected == False:
             pass
         else:
             print("here")
-            step = 50
+            step = 35
             # file = open("full_calibration_OPO.txt", 'r')
             # for line in file:
             #     wavelength = (line.strip().split('\t')[0].replace(',', '.'))[:7]
@@ -377,8 +386,7 @@ class MainWindow(QMainWindow, Design):
             if (new_wavelength < current_wavelength):
                 down = True
             while (abs(diff_wavelength) > 0.01):
-                current_wavelength = self.sm.wavemeter.get_wavelength()
-                time.sleep(1)
+                current_wavelength = self.get_average_wavelength()
                 diff_wavelength = abs(new_wavelength - current_wavelength)
                 if (diff_wavelength > 100):
                     step = 500
@@ -392,11 +400,32 @@ class MainWindow(QMainWindow, Design):
                     step = -step
                 self.sm.motor.go_relative(1, step)
                 self.sm.motor.wait_for_free(1)
-                self.sm.motor.go_relative(2, step)
                 #self.sm.motor.wait_for_free(2)
+                time.sleep(2)
                 if ((up and (new_wavelength < current_wavelength)) or (down and (new_wavelength > current_wavelength))):
                     break
+            current_energy = self.sm.energymeter.get_average_energy(10)
+            energy_1 = 0
+            energy_2 = 0
+            while True:
+                currrent_energy = self.sm.energymeter.get_average_energy(20)
+                if currrent_energy > 0 and currrent_energy < 0.0001:
+                    z_step = 30
+                if currrent_energy > 0.0001 and currrent_energy < 0.0003:
+                    z_step = 10
+                if currrent_energy > 0.0003:
+                    z_step = 2
+                    print(f"Поиск пика энергии, энергия: {currrent_energy}")
+                    if energy_1 < energy_2 and currrent_energy < energy_1 and energy_2 > 0:
+                    #self.printer.go_relative(1, -10 * z_step)
+                        break
+                    energy_2 = energy_1
+                    energy_1 = currrent_energy 
+                if (right_way == False):
+                    z_step = -z_step
+                self.sm.motor.go_relative(2, z_step) 
             right_way = True
+
 
                 
 

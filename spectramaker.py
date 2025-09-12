@@ -328,6 +328,73 @@ class Spectramaker:
                     break
                 step_tmp += steps/step_number
 
+    def get_average_wavelength(self):
+        average_energy = 0
+        for i in range(4):
+            average_energy += self.wavemeter.get_wavelength()
+            time.sleep(0.2)
+        return average_energy / 4
+
+    def go_to_wavelength_by_motor(self, wavelength: float):
+        if self.motor.is_connected == False:
+            pass
+        else:
+            print("here")
+            step = 35
+            current_wavelength = self.wavemeter.get_wavelength()
+            self.motor.go_relative(1, step)
+            time.sleep(2)
+            for_test_current_wavelength = self.wavemeter.get_wavelength()
+            new_wavelength = wavelength
+            diff_wavelength = abs(new_wavelength - current_wavelength)
+            right_way = True
+            if (abs(new_wavelength - for_test_current_wavelength) > diff_wavelength):
+                right_way = False
+            up = False
+            down = False
+            if (new_wavelength > current_wavelength):
+                up = True
+            if (new_wavelength < current_wavelength):
+                down = True
+            while (abs(diff_wavelength) > 0.01):
+                current_wavelength = self.get_average_wavelength()
+                diff_wavelength = abs(new_wavelength - current_wavelength)
+                if (diff_wavelength > 100):
+                    step = 500
+                if (diff_wavelength < 20):
+                    step = 300
+                if (diff_wavelength <= 5):
+                    step = 30
+                if (diff_wavelength <= 0.2):
+                    step = 5
+                if (right_way == False):
+                    step = -step
+                self.motor.go_relative(1, step)
+                self.motor.wait_for_free(1)
+                #self.sm.motor.wait_for_free(2)
+                if ((up and (new_wavelength < current_wavelength)) or (down and (new_wavelength > current_wavelength))):
+                    break
+            current_energy = self.energymeter.get_average_energy(10)
+            energy_1 = 0
+            energy_2 = 0
+            while True:
+                currrent_energy = self.energymeter.get_average_energy(20)
+                if currrent_energy > 0 and currrent_energy < 0.0001:
+                    z_step = 20
+                if currrent_energy > 0.0001 and currrent_energy < 0.0003:
+                    z_step = 10
+                if currrent_energy > 0.0003:
+                    z_step = 2
+                    print(f"Поиск пика энергии, энергия: {currrent_energy}")
+                    if energy_1 < energy_2 and currrent_energy < energy_1 and energy_2 > 0:
+                    #self.printer.go_relative(1, -10 * z_step)
+                        break
+                    energy_2 = energy_1
+                    energy_1 = currrent_energy 
+                if (right_way == False):
+                    z_step = -z_step
+                self.motor.go_relative(2, z_step) 
+            right_way = True
 
     def get_spectrum_by_motor(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,\
                       wavelength_step: float = 0., folder: str = "data") -> None:
@@ -340,29 +407,19 @@ class Spectramaker:
         #self.motor.go_home(1)
         #self.motor.go_home(2)
         count = self.oscilloscope.get_acquire_count()
-        file = open(f'full_calibration_OPO.txt', 'r')
-        file_cal = open(f'{folder}\\calibration_file_OPO.txt', 'w')
-        for line in file:
-            wave = line.strip().split('\t')[0].replace(',', '.')
-            motor_1 = int(line.strip().split('\t')[1])
-            motor_2 = int(line.strip().split('\t')[2])
-            if float(wave) < wavelength_min:
-                continue
-            if float(wave) > wavelength_max:
-                continue
-            self.motor.go_absolute(1, motor_1)
-            self.motor.go_absolute(2, motor_2)
+        wavelength_cur = wavelength_min
+        self.go_to_wavelength_by_motor(wavelength_cur)
+        time.sleep(5)
+        while abs(wavelength_max - wavelength_cur) > 0.01:
+            wavelength_cur += wavelength_step
             time.sleep(1)
-            wavelength = wave
+            wavelength = self.get_average_wavelength()
             self.oscilloscope.run_acquision()
             time.sleep(count / self.frequency + 1.5) # частота лазера, обычно 10 Гц
             self.oscilloscope.save_file(f'{folder}\\{str(wavelength)[:7]}.txt')
-            file_cal.write(f'{str(wavelength)[:7]}\t{motor_1}\t{motor_2}\n')
             print('got on ', wavelength)
-            wavelength = float((int(float(wavelength) * 1000) + int(wavelength_step * 1000)) / 1000)
-            wavelength_min = wavelength
-        file.close()
-        file_cal.close()
+            self.go_to_wavelength_by_motor(wavelength_cur)
+            time.sleep(2)
 
     def get_energy_profile_by_motor(self, n) -> None:
         file_1 = open(f'spectrum_5\\energy_profile.txt', 'w')
