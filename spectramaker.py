@@ -197,8 +197,11 @@ class Spectramaker:
             print("Осциллограф не подключен!")
             return
 
-        if not os.path.isdir(folder):
-            os.mkdir(folder)
+        dropboxFolder = f"C:\\Users\\219-PC\\Dropbox\\МФД\\Vladislav\\Изопрен\\Масс-спектры\\бутадиен\\{folder}"
+        if (os.path.isdir(dropboxFolder)):
+            pass
+        else:
+            os.mkdir(dropboxFolder)
 
         self.oscilloscope.set_acquire_average_mode()
         self.oscilloscope.set_acquire_count(average_count)
@@ -215,9 +218,9 @@ class Spectramaker:
                 motor_2_steps = int(parts[2])
                 calibration_data.append((wavelength, motor_1_steps, motor_2_steps))
 
-        file_cal = open(f'{folder}\\calibration_file.txt', 'w')
+        file_cal = open(f'{dropboxFolder}\\calibration_file.txt', 'w')
         
-        res_file = open(f'{folder}\\{wavelength_min}-{wavelength_max}_energy_profile.txt', 'w')
+        res_file = open(f'{dropboxFolder}\\{wavelength_min}-{wavelength_max}_energy_profile.txt', 'w')
         target_wavelength = wavelength_min
         while (target_wavelength >= wavelength_min and target_wavelength <= (wavelength_max + 0.001)):
             self.energymeter.set_wavelength(target_wavelength/2)
@@ -229,7 +232,7 @@ class Spectramaker:
             self.oscilloscope.run_acquision()
             time.sleep(count / self.frequency + 2)
             wavelength_str = str(current_wavelenght)[:7].replace('.', ',')
-            self.oscilloscope.save_file(f'{folder}\\{wavelength_str}.txt')
+            self.oscilloscope.save_file(f'{dropboxFolder}\\{wavelength_str}.txt')
             energy = self.energymeter.get_average_energy(20) * 1000
             if(inspect_energy != 0):
                 res_file.write(f'{wavelength_str}\t{energy}\n')
@@ -398,10 +401,11 @@ class Spectramaker:
 
     def get_spectrum_by_motor(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,\
                       wavelength_step: float = 0., folder: str = "data") -> None:
-        if (os.path.isdir(folder)):
+        dropboxFolder = f"C:\\Users\\219-PC\\Dropbox\\МФД\\Vladislav\\Изопрен\\Масс-спектры\\бутадиен\\{folder}"
+        if (os.path.isdir(dropboxFolder)):
             pass
         else:
-            os.mkdir(folder)
+            os.mkdir(dropboxFolder)
         self.oscilloscope.set_acquire_average_mode()
         self.oscilloscope.set_acquire_count(average_count)
         #self.motor.go_home(1)
@@ -416,7 +420,7 @@ class Spectramaker:
             wavelength = self.get_average_wavelength()
             self.oscilloscope.run_acquision()
             time.sleep(count / self.frequency + 1.5) # частота лазера, обычно 10 Гц
-            self.oscilloscope.save_file(f'{folder}\\{str(wavelength)[:7]}.txt')
+            self.oscilloscope.save_file(f'{dropboxFolder}\\{str(wavelength)[:7]}.txt')
             print('got on ', wavelength)
             self.go_to_wavelength_by_motor(wavelength_cur)
             time.sleep(2)
