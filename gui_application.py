@@ -1,16 +1,57 @@
 from PyQt6.QtWidgets import QMainWindow, QMessageBox, QApplication
 from PyQt6 import QtWidgets, uic, QtCore
+from PyQt6.QtCore import QObject, QThread, pyqtSignal
 import sys
 import random
 import contextlib
 import os
 from spectramaker import *
+import pyqtgraph as pg
+
 
 Design, _ = uic.loadUiType('gui_window.ui')
 
+class GenericWorker(QObject):
+    finished = pyqtSignal() 
+    error = pyqtSignal(tuple)  
+    
+    def __init__(self, function, *args, **kwargs):
+        super().__init__()
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        try:
+            self.function(*self.args, **self.kwargs)
+        except Exception as e:
+            self.error.emit((type(e), e.strerror))
+        finally:
+            self.finished.emit()
+
+
 class MainWindow(QMainWindow, Design):
+
+    class ExperimentWorker(QThread):
+
+        newDataAvailable = pyqtSignal(str, float)
+        experimentFinished = pyqtSignal()
+
+        def __init__(self, spectramaker, params):
+            super().__init__()
+            self.sm = spectramaker
+            self.params = params
+
+        def run(self):
+            self.sm.get_spectrum_with_signal(self.params, self.newDataAvailable)
+            self.experimentFinished.emit()
+
+
+
     def __init__(self):
+        self.thread = None
         self.sm = Spectramaker()
+        self.setup_processing_ui()
         super().__init__()
 
         self.setupUi(self)
@@ -86,6 +127,40 @@ class MainWindow(QMainWindow, Design):
         self.getEnergyProfilePushButton.clicked.connect(self.get_energy)
 
         self.spinboxes_limits_init()
+
+    def setup_processing_ui(self):
+        self.osc_plot_widget = pg.PlotWidget(title="Oscilloscope Signal")
+        self.osc_plot = self.osc_plot_widget.getPlotItem()
+        
+        self.lower_bound = pg.InfiniteLine(pos=0.1, angle=90, movable=True, pen='r')
+        self.upper_bound = pg.InfiniteLine(pos=0.9, angle=90, movable=True, pen='r')
+        self.osc_plot.addItem(self.lower_bound)
+        self.osc_plot.addItem(self.upper_bound)
+
+        self.results_plot_widget = pg.PlotWidget(title="Real-time Results")
+        self.results_plot_widget.setLabel('left', 'Integrated Signal')
+        self.results_plot_widget.setLabel('bottom', 'Wavelength (nm)')
+
+        self.wavelengths = []
+        self.integrated_signals = []
+
+    @pyqtSlot(str, float)
+    def process_new_data(self, file_path, wavelength):
+
+        data = np.loadtxt(file_path) 
+        self.osc_plot.clear()
+        self.osc_plot.plot(data[:,0], data[:,1])
+
+        x_start = self.lower_bound.value()
+        x_end = self.upper_bound.value()
+
+        integrated_value = integrate_with_origin(file_path, x_start, x_end)
+        
+        if integrated_value is not None:
+            self.wavelengths.append(wavelength)
+            self.integrated_signals.append(integrated_value)
+            self.results_plot_widget.plot(self.wavelengths, self.integrated_signals, clear=True, pen='g', symbol='o')
+
 
     def update_global(self) -> None:
         self.pushButton.setText("Random button")
@@ -515,6 +590,26 @@ class MainWindow(QMainWindow, Design):
     def go_by_steps_motorZ(self):
         steps = self.Steps_MotorZ.value()
         self.sm.printer.go_relative(1 , steps)
+
+def integrate_with_origin(file_path, x_start, x_end):
+    origin = op.find_or_begin()
+
+    if not origin:
+        print("Could not connect to Origin.")
+        return None
+
+    try:
+        wks = origin.new_sheet('w')
+        wks.from_file(file_path)
+
+        result = op.wks_integration(wks, 0, 1, x_start, x_end)
+
+        area = result['area']
+        print(f"Integration result (Area): {area}")
+
+        return area
+    finally:
+        pass
 
 
 if __name__ == '__main__':
