@@ -103,8 +103,8 @@ class MainWindow(QMainWindow, Design):
         #if (self.sm.printer.is_connected and self.UseDyeLazerRadioButton.isChecked() == 1):
          #   self.calibrationWavelengthLineEdit.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
           #  self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.printer.get_steps_position(2)))
-        if (self.sm.motor.is_connected and self.UseOPOLazerRadioButton.isChecked() == 1):
-            self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
+        # if (self.sm.motor.is_connected and self.UseOPOLazerRadioButton.isChecked() == 1):
+        #     self.calibrationWavelengthLineEdit_2.setText(self.translate_to_wavelength(self.sm.motor.get_position(1)))
 
     def real_talk(self) -> None:
         self.pushButton.setText("Clicked!")
@@ -370,10 +370,10 @@ class MainWindow(QMainWindow, Design):
             #         self.sm.motor.go_absolute(2, motor_2)
             #         break
             # file.close()
-            current_wavelength = self.sm.wavemeter.get_wavelength()
+            current_wavelength = self.get_average_wavelength()
             self.sm.motor.go_relative(1, step)
             time.sleep(2)
-            for_test_current_wavelength = self.sm.wavemeter.get_wavelength()
+            for_test_current_wavelength = self.get_average_wavelength()
             new_wavelength = self.goToSpinBoxSecond.value()
             diff_wavelength = abs(new_wavelength - current_wavelength)
             right_way = True
@@ -399,9 +399,9 @@ class MainWindow(QMainWindow, Design):
                 if (right_way == False):
                     step = -step
                 self.sm.motor.go_relative(1, step)
-                self.sm.motor.wait_for_free(1)
+                #self.sm.motor.wait_for_free(1)
                 #self.sm.motor.wait_for_free(2)
-                time.sleep(2)
+                time.sleep(0.5)
                 if ((up and (new_wavelength < current_wavelength)) or (down and (new_wavelength > current_wavelength))):
                     break
             current_energy = self.sm.energymeter.get_average_energy(10)
@@ -470,13 +470,13 @@ class MainWindow(QMainWindow, Design):
         wavelength_min = self.wavelengthStartSpinBox.value()
         wavelength_max = self.wavelengthEndSpinBox.value()
         inspect_energy = self.InspecEnergy.isChecked()
-        # energy_limit = self.EnergyAccurace.value()
+        energy_limit = self.EnergyAccurace.value() / 1000
         if (self.UseOPOLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum_by_motor(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                             wavelength_step=wavelength_step, folder=folder)
+                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = energy_limit)
         elif(self.UseDyeLazerRadioButton.isChecked() == 1):
             self.sm.get_spectrum(wavelength_min=wavelength_min, wavelength_max=wavelength_max, average_count=average_count,
-                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = 0.0002)
+                             wavelength_step=wavelength_step, folder=folder, inspect_energy = inspect_energy, energy_limit = energy_limit)
         
         self.warningWindowLineEdit.setText("Эксперимент завершён!")
 
