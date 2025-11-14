@@ -342,10 +342,10 @@ class Spectramaker:
 
     def get_average_wavelength(self):
         average_energy = 0
-        for i in range(4):
+        for i in range(5):
             average_energy += self.wavemeter.get_wavelength()
-            time.sleep(0.2)
-        return average_energy / 4
+            time.sleep(0.5)
+        return average_energy / 5
 
     def go_to_wavelength_by_motor(self, wavelength: float, energy_limit: float):
         if self.motor.is_connected == False:
@@ -353,10 +353,17 @@ class Spectramaker:
         else:
             print("here")
             step = 35
-            current_wavelength = self.get_average_wavelength()
+            current_wavelength = self.wavemeter.get_wavelength()
+            accurate_measure = False
+            if (current_wavelength > 500 and current_wavelength < 520):
+                accurate_measure = True
             self.motor.go_relative(1, step)
             time.sleep(2)
-            for_test_current_wavelength = self.get_average_wavelength()
+            for_test_current_wavelength = 0
+            if (accurate_measure):
+                for_test_current_wavelength = self.get_average_wavelength()
+            else:
+                for_test_current_wavelength = self.wavemeter.get_wavelength()
             new_wavelength = wavelength
             diff_wavelength = abs(new_wavelength - current_wavelength)
             right_way = True
@@ -369,7 +376,11 @@ class Spectramaker:
             if (new_wavelength < current_wavelength):
                 down = True
             while (abs(diff_wavelength) > 0.01):
-                current_wavelength = self.get_average_wavelength()
+                current_wavelength = 0
+                if (accurate_measure):
+                    current_wavelength = self.get_average_wavelength()
+                else:
+                    current_wavelength = self.wavemeter.get_wavelength()
                 diff_wavelength = abs(new_wavelength - current_wavelength)
                 if (diff_wavelength > 100):
                     step = 500

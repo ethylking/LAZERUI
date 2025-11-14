@@ -53,7 +53,7 @@ class MainWindow(QMainWindow, Design):
     def __init__(self):
         self.thread = None
         self.sm = Spectramaker()
-        self.setup_processing_ui()
+        #self.setup_processing_ui()
         super().__init__()
 
         self.setupUi(self)
@@ -271,13 +271,20 @@ class MainWindow(QMainWindow, Design):
         
         thread = GenericThread(target_function, *args)
         thread.progress_signal.connect(self.warningWindowLineEdit.setText)
-        thread.error_signal.connect(self.on_thread_error)
+        thread.error_signal.connect(lambda error: self.on_thread_error(error, button))
         thread.finished_signal.connect(
             lambda result: self.on_thread_finished(result, button, target_function.__name__)
         )
         thread.start()
         
         self.current_thread = thread
+
+    def on_thread_error(self, error_message, button=None):
+        self.progressBar.setVisible(False)
+        self.cancelButton.setVisible(False)
+        if button:
+            button.setEnabled(True)
+        self.warningWindowLineEdit.setText(f"Ошибка: {error_message}")
 
     def on_thread_finished(self, result, button, method_name):
         self.progressBar.setVisible(False)
@@ -301,11 +308,6 @@ class MainWindow(QMainWindow, Design):
             self.oscilloscopeConnectButton.setStyleSheet("background-color: green;")
         elif method_name == "go_home_motors":
             self.goHomeButton.setStyleSheet("background-color: green;")
-
-    def on_thread_error(self, error_message):
-        self.progressBar.setVisible(False)
-        self.cancelButton.setVisible(False)
-        self.warningWindowLineEdit.setText(f"Ошибка: {error_message}")
 
     def calculate_integral(self, x, y):
         left_bound = self.leftBoundarySpinBox.value()
@@ -409,9 +411,6 @@ class MainWindow(QMainWindow, Design):
 
     @pyqtSlot()
     def get_spectrum(self) -> None:
-        if not self.sm.printer.is_connected:
-            self.warningWindowLineEdit.setText("Мотор не подключен!")
-            return
         if not self.sm.oscilloscope.is_connected:
             self.warningWindowLineEdit.setText("Осциллограф не подключен!")
             return
