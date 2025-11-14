@@ -189,8 +189,16 @@ class Spectramaker:
                     break
         print(f"Перемещение на длину волны {wavelength_goal}: Z-мотор на {z_steps} шагов, X-мотор на {x_steps} шагов")
 
-    def get_spectrum(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,
-                     wavelength_step: float = 0., folder: str = "data", inspect_energy: int = 0, first_harmonic_energy: int = 0, energy_limit: float = 0.00003) -> None:
+    def get_spectrum(self ,**kwargs) -> None:
+        wavelength_min = kwargs.get('wavelength_min', 0)
+        wavelength_max = kwargs.get('wavelength_max', 0)
+        average_count = kwargs.get('average_count', 100)
+        wavelength_step = kwargs.get('wavelength_step', 0.0)
+        folder = kwargs.get('folder', "data")
+        inspect_energy = kwargs.get('inspect_energy', 0)
+        first_harmonic_energy = kwargs.get('first_harmonic_energy', 0)
+        energy_limit = kwargs.get('energy_limit', 0.00003)
+
         if not self.printer.is_connected:
             print("Принтер не подключен!")
             return
@@ -402,8 +410,16 @@ class Spectramaker:
                 self.motor.go_relative(2, z_step) 
             right_way = True
 
-    def get_spectrum_by_motor(self, wavelength_min: float, wavelength_max: float, average_count: int = 100,
-                      wavelength_step: float = 0., folder: str = "data", inspect_energy: int = 0, energy_limit: float = 0.0003) -> None:
+    def get_spectrum_by_motor(self, **kwargs) -> None:
+        wavelength_min = kwargs.get('wavelength_min', 0)
+        wavelength_max = kwargs.get('wavelength_max', 0)
+        average_count = kwargs.get('average_count', 100)
+        wavelength_step = kwargs.get('wavelength_step', 0.0)
+        folder = kwargs.get('folder', "data")
+        inspect_energy = kwargs.get('inspect_energy', 0)
+        first_harmonic_energy = kwargs.get('first_harmonic_energy', 0)
+        energy_limit = kwargs.get('energy_limit', 0.00003)
+
         dropboxFolder = f"C:\\Users\\219-PC\\Dropbox\\МФД\\Vladislav\\Изопрен\\Масс-спектры\\бутадиен\\{folder}"
         if (os.path.isdir(dropboxFolder)):
             pass

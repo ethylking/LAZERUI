@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
-    <height>455</height>
+    <width>895</width>
+    <height>839</height>
    </rect>
   </property>
   <property name="font">
@@ -58,7 +58,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -772,6 +772,103 @@
       </property>
      </widget>
     </widget>
+    <widget class="QWidget" name="realTimeTab">
+     <attribute name="title">
+      <string>Real-Time Spectrum</string>
+     </attribute>
+     <widget class="QWidget" name="oscilloscopePlotWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>281</width>
+        <height>171</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="intensityPlotWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>170</y>
+        <width>281</width>
+        <height>161</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="loadOscilloscopeFileButton">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>30</y>
+        <width>75</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>load file</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="plotFullSpectrumButton">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>60</y>
+        <width>75</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>show spectra</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="leftBoundarySpinBox">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>90</y>
+        <width>111</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>4</number>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="rightBoundarySpinBox">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>120</y>
+        <width>111</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="decimals">
+       <number>4</number>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="baselineComboBox">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>150</y>
+        <width>69</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Линейная</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Полином 2-й степени</string>
+       </property>
+      </item>
+     </widget>
+    </widget>
    </widget>
    <widget class="QToolBox" name="toolBox">
     <property name="geometry">
@@ -889,8 +986,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>101</width>
-       <height>299</height>
+       <width>98</width>
+       <height>28</height>
       </rect>
      </property>
      <attribute name="label">
@@ -930,7 +1027,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>513</width>
+     <width>895</width>
      <height>22</height>
     </rect>
    </property>
