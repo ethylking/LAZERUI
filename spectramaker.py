@@ -107,7 +107,7 @@ class Spectramaker:
             time.sleep(1)
             currrent_energy = self.energymeter.get_average_energy(20)
             if currrent_energy > 0 and currrent_energy < rude_energy_limit:
-                z_step = 100
+                z_step = 500
             if currrent_energy > rude_energy_limit and currrent_energy < precize_energy_limit:
                 z_step = 10
             if currrent_energy > precize_energy_limit:
@@ -125,6 +125,7 @@ class Spectramaker:
                 z_step = z_step
             else:
                 break
+            print("seeking next peak, ", z_step)
             self.printer.go_relative(1, z_step)  
     def go_wavelength(self, wavelength_goal: float, using_BBO_motor: bool) -> None:
         if not self.printer.is_connected:
@@ -383,9 +384,11 @@ class Spectramaker:
             while True:
                 currrent_energy = self.energymeter.get_average_energy(20)
                 if currrent_energy > 0 and currrent_energy < energy_limit * 0.2:
-                    z_step = 20
+                    z_step = 150
+                    print("Ищем, ", z_step)
                 if currrent_energy > energy_limit * 0.2 and currrent_energy < energy_limit * 0.5:
                     z_step = 10
+                    print("Ищем, ", z_step)
                 if currrent_energy > energy_limit * 0.5:
                     z_step = 2
                     print(f"Поиск пика энергии, энергия: {currrent_energy}")

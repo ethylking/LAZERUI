@@ -484,8 +484,9 @@ class MainWindow(QMainWindow, Design):
             energy_2 = 0
             while True:
                 currrent_energy = self.sm.energymeter.get_average_energy(20)
+                print("Ищем, ", z_step)
                 if currrent_energy > 0 and currrent_energy < 0.0001:
-                    z_step = 30
+                    z_step = 150
                 if currrent_energy > 0.0001 and currrent_energy < 0.0003:
                     z_step = 10
                 if currrent_energy > 0.0003:
