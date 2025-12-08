@@ -264,10 +264,11 @@ class EquipmentThreads:
         return "Перекалибровка завершена"
 
     @staticmethod
-    def goto_wavelength_by_motor(sm, wavelength):
+    def goto_wavelength_by_motor(sm, wavelength, energy_limit):
         if not sm.motor.is_connected:
             raise Exception("Motor 2 not connected")
-            
+        print(energy_limit)
+
         step = 35
         current_wavelength = EquipmentThreads._get_average_wavelength(sm)
         sm.motor.go_relative(1, step)
@@ -287,16 +288,18 @@ class EquipmentThreads:
         while abs(diff_wavelength) > 0.01:
             current_wavelength = EquipmentThreads._get_average_wavelength(sm)
             diff_wavelength = abs(new_wavelength - current_wavelength)
-            
             if diff_wavelength > 100:
+                step = 10000
+            elif diff_wavelength > 20:
+                step = 1500
+            elif diff_wavelength >= 5:
                 step = 500
-            elif diff_wavelength < 20:
-                step = 300
-            elif diff_wavelength <= 5:
-                step = 30
-            elif diff_wavelength <= 0.2:
-                step = 5
-                
+            elif diff_wavelength >= 1:
+                step = 250
+            elif diff_wavelength >= 0.15:
+                step = 50
+            else:
+                step = 10
             if not right_way:
                 step = -step
                 
@@ -313,11 +316,11 @@ class EquipmentThreads:
         
         while True:
             current_energy = sm.energymeter.get_average_energy(20)
-            if current_energy > 0 and current_energy < 0.0001:
-                z_step = 30
-            elif current_energy > 0.0001 and current_energy < 0.0003:
+            if current_energy > 0 and current_energy < energy_limit * 0.2:
+                z_step = 200
+            elif current_energy > energy_limit * 0.2 and current_energy < energy_limit * 0.5:
                 z_step = 10
-            elif current_energy > 0.0003:
+            elif current_energy > energy_limit * 0.5:
                 z_step = 2
                 if energy_1 < energy_2 and current_energy < energy_1 and energy_2 > 0:
                     break
@@ -328,7 +331,9 @@ class EquipmentThreads:
                 z_step = -z_step
                 
             sm.motor.go_relative(2, z_step)
-            
+    
+        if (abs(sm.wavemeter.get_wavelength() - wavelength) > 0.1):
+            EquipmentThreads.goto_wavelength_by_motor(sm, wavelength)
         return "Перемещение motor 2 завершено"
 
     @staticmethod

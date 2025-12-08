@@ -235,6 +235,7 @@ class MainWindow(QMainWindow, Design):
         self.goToPushButtonSecond.clicked.connect(
             lambda: self.start_thread(EquipmentThreads.goto_wavelength_by_motor, self.sm,
                                     self.goToSpinBoxSecond.value(),
+                                    self.EnergyAccurace.value() / 1000,
                                     button=self.goToPushButtonSecond, 
                                     progress_message="Перемещение motor 2...")
         )

@@ -97,8 +97,10 @@ class Energiser:
         self.em.set_zero_offset()
 
     def refresh(self) -> None:
+        print("start refreshed")
         self.em.set_zero_offset()
         self.em.clear_zero_offset()
+        print("refreshed end")
 
 class Wavemeter:
     integral_constant = 69280 / (419.963 - 410)

@@ -382,28 +382,39 @@ class Spectramaker:
                 else:
                     current_wavelength = self.wavemeter.get_wavelength()
                 diff_wavelength = abs(new_wavelength - current_wavelength)
-                if (diff_wavelength > 100):
+                if diff_wavelength > 100:
+                    step = 10000
+                elif diff_wavelength > 20:
+                    step = 1500
+                elif diff_wavelength >= 5:
                     step = 500
-                if (diff_wavelength < 20):
-                    step = 300
-                if (diff_wavelength <= 5):
-                    step = 30
-                if (diff_wavelength <= 0.2):
-                    step = 5
+                elif diff_wavelength >= 1:
+                    step = 250
+                elif diff_wavelength >= 0.15:
+                    step = 50
+                else:
+                    step = 10
                 if (right_way == False):
                     step = -step
+                print("Первый мотор шагает на ", step, "Разница в длинах волн ", diff_wavelength)
                 self.motor.go_relative(1, step)
+                time.sleep(1)
+
                 #self.motor.wait_for_free(1)
                 #self.sm.motor.wait_for_free(2)
                 if ((up and (new_wavelength < current_wavelength)) or (down and (new_wavelength > current_wavelength))):
                     break
+
             current_energy = self.energymeter.get_average_energy(10)
             energy_1 = 0
             energy_2 = 0
+            z_step = 0
+            self.energymeter.refresh()
+            print("refreshed")
             while True:
                 currrent_energy = self.energymeter.get_average_energy(20)
                 if currrent_energy > 0 and currrent_energy < energy_limit * 0.2:
-                    z_step = 150
+                    z_step = 200
                     print("Ищем, ", z_step)
                 if currrent_energy > energy_limit * 0.2 and currrent_energy < energy_limit * 0.5:
                     z_step = 10
@@ -420,6 +431,9 @@ class Spectramaker:
                     z_step = -z_step
                 self.motor.go_relative(2, z_step) 
             right_way = True
+
+        if (abs(diff_wavelength) > 0.1):
+            self.go_to_wavelength_by_motor(wavelength, energy_limit)
 
     def get_spectrum_by_motor(self, **kwargs) -> None:
         wavelength_min = kwargs.get('wavelength_min', 0)
@@ -442,10 +456,11 @@ class Spectramaker:
         #self.motor.go_home(2)
         count = self.oscilloscope.get_acquire_count()
         wavelength_cur = wavelength_min
-        self.go_to_wavelength_by_motor(wavelength_cur, energy_limit)
+        #self.go_to_wavelength_by_motor(wavelength_cur, energy_limit)
         time.sleep(5)
         res_file = open(f'{dropboxFolder}\\{wavelength_min}-{wavelength_max}_energy_profile.txt', 'w')
         while (wavelength_max + 0.01) > wavelength_cur:
+            self.energymeter.refresh()
             wavelength_cur += wavelength_step
             time.sleep(1)
             wavelength = self.get_average_wavelength()
