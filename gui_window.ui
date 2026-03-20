@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
-    <height>839</height>
+    <width>565</width>
+    <height>441</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="font">
    <font>
@@ -18,1016 +24,856 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLineEdit" name="warningWindowLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>390</y>
-      <width>331</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="readOnly">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>370</y>
-      <width>121</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Warning window</string>
-    </property>
-   </widget>
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>0</y>
-      <width>411</width>
-      <height>359</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>3</number>
-    </property>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>Experiment</string>
-     </attribute>
-     <widget class="QDoubleSpinBox" name="wavelengthStepSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>73</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>3</number>
-      </property>
-      <property name="minimum">
-       <double>0.001000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>100.000000000000000</double>
-      </property>
-      <property name="singleStep">
-       <double>0.001000000000000</double>
-      </property>
-      <property name="value">
-       <double>0.001000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_7">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>71</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Step, nm</string>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="averageCountSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>80</y>
-        <width>73</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>1</number>
-      </property>
-      <property name="maximum">
-       <number>500</number>
-      </property>
-      <property name="value">
-       <number>100</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_11">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>60</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Average count</string>
-      </property>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>120</y>
-        <width>75</width>
-        <height>54</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>λ start</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="wavelengthStartSpinBox">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="minimum">
-          <double>400.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.001000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>120</y>
-        <width>75</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>λ end</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="wavelengthEndSpinBox">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="minimum">
-          <double>400.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.001000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QSpinBox" name="refreshRateSpinBox">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>80</y>
-        <width>73</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="minimum">
-       <number>100</number>
-      </property>
-      <property name="maximum">
-       <number>10000</number>
-      </property>
-      <property name="singleStep">
-       <number>100</number>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_6">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>60</y>
-        <width>101</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>refresh rate (msec)</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="filenameLineEdit">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>280</y>
-        <width>121</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>useless, never mind</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_5">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>260</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Filename</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="folderLineEdit">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>230</y>
-        <width>121</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="text">
-       <string>data</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_12">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>210</y>
-        <width>101</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Folder</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="calibrationWavelengthLineEdit">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>280</y>
-        <width>151</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="wavemeterWavelengthLineEdit">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>230</y>
-        <width>151</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_9">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>260</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Current wavelength (calibration)</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_8">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>210</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Current wavelength (wavemeter)</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="EnergyAccurace">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>30</y>
-        <width>73</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>3</number>
-      </property>
-      <property name="minimum">
-       <double>0.001000000000000</double>
-      </property>
-      <property name="maximum">
-       <double>100.000000000000000</double>
-      </property>
-      <property name="singleStep">
-       <double>0.001000000000000</double>
-      </property>
-      <property name="value">
-       <double>0.001000000000000</double>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_17">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>10</y>
-        <width>91</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Energy accurace</string>
-      </property>
-     </widget>
-     <widget class="QWidget" name="layoutWidget_3">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>10</y>
-        <width>151</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_6">
-       <item>
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>Frequency</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QDoubleSpinBox" name="FrequencySpinBox">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="minimum">
-          <double>400.000000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.001000000000000</double>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="verticalLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>130</y>
-        <width>151</width>
-        <height>52</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
-       <item>
-        <widget class="QPushButton" name="getSpectrumPushButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="autoFillBackground">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>get spectrum</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="InspecEnergy">
-         <property name="text">
-          <string>Измерить энергию</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="verticalLayoutWidget_3">
-      <property name="geometry">
-       <rect>
-        <x>210</x>
-        <y>70</y>
-        <width>151</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_9">
-       <item>
-        <widget class="QPushButton" name="getEnergyProfilePushButton">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="autoFillBackground">
-          <bool>true</bool>
-         </property>
-         <property name="text">
-          <string>get energy profile</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="FirstHarmonicEnergy">
-         <property name="text">
-          <string>Энергия 1 гармоники</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>Control</string>
-     </attribute>
-     <widget class="QWidget" name="layoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>101</width>
-        <height>78</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>Go to (dye laser)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="goToSpinBox">
-           <property name="decimals">
-            <number>3</number>
-           </property>
-           <property name="minimum">
-            <double>400.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>700.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.001000000000000</double>
-           </property>
-           <property name="value">
-            <double>400.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="goToPushButton">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Go to!</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="layoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>20</y>
-        <width>101</width>
-        <height>78</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>Go to (OPO laser)</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDoubleSpinBox" name="goToSpinBoxSecond">
-           <property name="decimals">
-            <number>3</number>
-           </property>
-           <property name="minimum">
-            <double>400.000000000000000</double>
-           </property>
-           <property name="maximum">
-            <double>700.000000000000000</double>
-           </property>
-           <property name="singleStep">
-            <double>0.001000000000000</double>
-           </property>
-           <property name="value">
-            <double>400.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="goToPushButtonSecond">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="autoFillBackground">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Go to!</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QPushButton" name="goHomeButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>250</x>
-        <y>70</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>go home</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="recalibrateButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>250</x>
-        <y>30</y>
-        <width>121</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>recalibrate</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>110</y>
-        <width>81</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>PushButton</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_14">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>150</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Current wavelength (wavemeter)</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="wavemeterWavelengthLineEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>170</y>
-        <width>151</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_15">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>200</y>
-        <width>221</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Current wavelength (calibration)</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="calibrationWavelengthLineEdit_2">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>220</y>
-        <width>151</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="readOnly">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_3">
-     <attribute name="title">
-      <string>Motor Control</string>
-     </attribute>
-     <widget class="QWidget" name="horizontalLayoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>70</y>
-        <width>281</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="MotorZ_control">
-       <item>
-        <widget class="QLabel" name="label_16">
-         <property name="text">
-          <string>Motor ot the BBO</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="Steps_MotorZ"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="GoSteps_MotorZ">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="horizontalLayoutWidget_2">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>10</y>
-        <width>281</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="MotorX_control">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Motor on the grid</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="Steps_MotorX"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="GoSteps_MotorX">
-         <property name="text">
-          <string>PushButton</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QLabel" name="label_19">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>140</y>
-        <width>121</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>1000 steps ~ 0.5 nm</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="realTimeTab">
-     <attribute name="title">
-      <string>Real-Time Spectrum</string>
-     </attribute>
-     <widget class="QWidget" name="oscilloscopePlotWidget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>281</width>
-        <height>171</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QWidget" name="intensityPlotWidget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>170</y>
-        <width>281</width>
-        <height>161</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="loadOscilloscopeFileButton">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>30</y>
-        <width>75</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>load file</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="plotFullSpectrumButton">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>60</y>
-        <width>75</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>show spectra</string>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="leftBoundarySpinBox">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>90</y>
-        <width>111</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>4</number>
-      </property>
-     </widget>
-     <widget class="QDoubleSpinBox" name="rightBoundarySpinBox">
-      <property name="geometry">
-       <rect>
-        <x>290</x>
-        <y>120</y>
-        <width>111</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="decimals">
-       <number>4</number>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="baselineComboBox">
-      <property name="geometry">
-       <rect>
-        <x>310</x>
-        <y>150</y>
-        <width>69</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>Линейная</string>
-       </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <item>
+     <layout class="QGridLayout" name="gridLayout_2" rowstretch="0">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetDefaultConstraint</enum>
+      </property>
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <layout class="QGridLayout" name="gridLayout" rowstretch="0,1,0,0,0,0" columnstretch="0,1">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetNoConstraint</enum>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="horizontalSpacing">
+           <number>6</number>
+          </property>
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <property name="sizeConstraint">
+             <enum>QLayout::SetFixedSize</enum>
+            </property>
+            <item>
+             <widget class="QToolBox" name="toolBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>166667</width>
+                <height>166667</height>
+               </size>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <widget class="QWidget" name="page">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>111</width>
+                 <height>262</height>
+                </rect>
+               </property>
+               <attribute name="label">
+                <string>Подключения</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QPushButton" name="wavemeterConnectButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoFillBackground">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Волномер</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="energymeterConnectButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Энергомер</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="motorConnectButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Лазер (краска)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="motorConnectButtonSecond">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Лазер (OPO)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="oscilloscopeConnectButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoFillBackground">
+                   <bool>true</bool>
+                  </property>
+                  <property name="text">
+                   <string>Осциллограф</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="page_2">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>95</width>
+                 <height>262</height>
+                </rect>
+               </property>
+               <attribute name="label">
+                <string>Выбрать лазер</string>
+               </attribute>
+               <layout class="QGridLayout" name="gridLayout_7">
+                <item row="0" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <item>
+                   <widget class="QRadioButton" name="UseDyeLazerRadioButton">
+                    <property name="text">
+                     <string>Краска</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="UseOPOLazerRadioButton">
+                    <property name="text">
+                     <string>OPO</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <widget class="QTabWidget" name="tabWidget">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="tabPosition">
+             <enum>QTabWidget::North</enum>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="tab">
+             <attribute name="title">
+              <string>Эксперимент</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_23">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="0" column="1">
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="0" column="1">
+                   <layout class="QVBoxLayout" name="verticalLayout_17">
+                    <item>
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Порог энергии</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="EnergyAccurace">
+                      <property name="decimals">
+                       <number>3</number>
+                      </property>
+                      <property name="minimum">
+                       <double>0.001000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>100.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.001000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>0.001000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_19">
+                      <item>
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>частота обновления</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="refreshRateSpinBox">
+                        <property name="minimum">
+                         <number>100</number>
+                        </property>
+                        <property name="maximum">
+                         <number>10000</number>
+                        </property>
+                        <property name="singleStep">
+                         <number>100</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="0">
+                   <layout class="QVBoxLayout" name="verticalLayout_2">
+                    <item>
+                     <widget class="QLabel" name="label_3">
+                      <property name="text">
+                       <string>λ начальная</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="wavelengthStartSpinBox">
+                      <property name="decimals">
+                       <number>3</number>
+                      </property>
+                      <property name="minimum">
+                       <double>400.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.001000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="0">
+                   <layout class="QVBoxLayout" name="verticalLayout_16">
+                    <item>
+                     <widget class="QLabel" name="label_7">
+                      <property name="text">
+                       <string>Шаг, нм</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="wavelengthStepSpinBox">
+                      <property name="decimals">
+                       <number>3</number>
+                      </property>
+                      <property name="minimum">
+                       <double>0.001000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>100.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.001000000000000</double>
+                      </property>
+                      <property name="value">
+                       <double>0.001000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_18">
+                      <item>
+                       <widget class="QLabel" name="label_11">
+                        <property name="text">
+                         <string>Среднее кол-во</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="averageCountSpinBox">
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>500</number>
+                        </property>
+                        <property name="value">
+                         <number>100</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="0" column="2">
+                   <layout class="QVBoxLayout" name="verticalLayout_22">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_9">
+                      <item>
+                       <widget class="QPushButton" name="getEnergyProfilePushButton">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                        <property name="text">
+                         <string>Получить профиль энергии</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QCheckBox" name="FirstHarmonicEnergy">
+                        <property name="text">
+                         <string>Энергия 1 гармоники</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QVBoxLayout" name="verticalLayout_7">
+                        <item>
+                         <widget class="QPushButton" name="getSpectrumPushButton">
+                          <property name="enabled">
+                           <bool>true</bool>
+                          </property>
+                          <property name="autoFillBackground">
+                           <bool>true</bool>
+                          </property>
+                          <property name="text">
+                           <string>Получить спектр</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QCheckBox" name="InspecEnergy">
+                          <property name="text">
+                           <string>Измерить энергию</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="1">
+                   <layout class="QVBoxLayout" name="verticalLayout">
+                    <item>
+                     <widget class="QLabel" name="label_4">
+                      <property name="text">
+                       <string>λ конечная</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="wavelengthEndSpinBox">
+                      <property name="decimals">
+                       <number>3</number>
+                      </property>
+                      <property name="minimum">
+                       <double>400.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.001000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="1" column="2">
+                   <layout class="QVBoxLayout" name="verticalLayout_6">
+                    <item>
+                     <widget class="QLabel" name="label_18">
+                      <property name="text">
+                       <string>Частота</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="FrequencySpinBox">
+                      <property name="decimals">
+                       <number>3</number>
+                      </property>
+                      <property name="minimum">
+                       <double>400.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>1000.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.001000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item row="1" column="1">
+                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_20">
+                    <item>
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>Папка</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="folderLineEdit">
+                      <property name="layoutDirection">
+                       <enum>Qt::LeftToRight</enum>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="text">
+                       <string>data</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_5">
+                      <property name="text">
+                       <string>Имя файла</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="filenameLineEdit">
+                      <property name="text">
+                       <string>useless, never mind</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_21">
+                    <item>
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>Текущая длина волны (волномер)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="wavemeterWavelengthLineEdit">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>Текущая длина волны (калибровка)</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="calibrationWavelengthLineEdit">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_2">
+             <attribute name="title">
+              <string>Изменить длину волны</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_15">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_6">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_3">
+                      <item>
+                       <widget class="QLabel" name="label_10">
+                        <property name="text">
+                         <string>Двигать (краска)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QDoubleSpinBox" name="goToSpinBox">
+                        <property name="decimals">
+                         <number>3</number>
+                        </property>
+                        <property name="minimum">
+                         <double>400.000000000000000</double>
+                        </property>
+                        <property name="maximum">
+                         <double>700.000000000000000</double>
+                        </property>
+                        <property name="singleStep">
+                         <double>0.001000000000000</double>
+                        </property>
+                        <property name="value">
+                         <double>400.000000000000000</double>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="goToPushButton">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                        <property name="text">
+                         <string>Поехали!</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_4">
+                      <item>
+                       <widget class="QLabel" name="label_13">
+                        <property name="text">
+                         <string>Двигать (OPO)</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QDoubleSpinBox" name="goToSpinBoxSecond">
+                        <property name="decimals">
+                         <number>3</number>
+                        </property>
+                        <property name="minimum">
+                         <double>400.000000000000000</double>
+                        </property>
+                        <property name="maximum">
+                         <double>700.000000000000000</double>
+                        </property>
+                        <property name="singleStep">
+                         <double>0.001000000000000</double>
+                        </property>
+                        <property name="value">
+                         <double>400.000000000000000</double>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="goToPushButtonSecond">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="autoFillBackground">
+                         <bool>true</bool>
+                        </property>
+                        <property name="text">
+                         <string>Поехали!</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_10">
+                  <item>
+                   <widget class="QLabel" name="label_14">
+                    <property name="text">
+                     <string>Текущая длина волны (волномер)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="wavemeterWavelengthLineEdit_2">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_15">
+                    <property name="text">
+                     <string>Текущая длина волны (калибровка)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="calibrationWavelengthLineEdit_2">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <widget class="QPushButton" name="recalibrateButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Перекалибровать</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="goHomeButton">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="text">
+                     <string>Двигать в нач. положение</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButton">
+                    <property name="text">
+                     <string>PushButton</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_3">
+             <attribute name="title">
+              <string>Управление моторами</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_24">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_3">
+                <item row="0" column="0">
+                 <layout class="QHBoxLayout" name="MotorX_control">
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetNoConstraint</enum>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>Мотор на решетке</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="Steps_MotorX"/>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="GoSteps_MotorX">
+                    <property name="text">
+                     <string>Двигать</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="1" column="0">
+                 <layout class="QHBoxLayout" name="MotorZ_control">
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetNoConstraint</enum>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_16">
+                    <property name="text">
+                     <string>Мотор на BBO</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="Steps_MotorZ"/>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="GoSteps_MotorZ">
+                    <property name="text">
+                     <string>Двигать</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_19">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>1000 шагов ~ 0.5 нм</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="realTimeTab">
+             <attribute name="title">
+              <string>Спектр</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_12">
+                  <item>
+                   <widget class="QWidget" name="oscilloscopePlotWidget" native="true"/>
+                  </item>
+                  <item>
+                   <widget class="QWidget" name="intensityPlotWidget" native="true"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_13">
+                  <item>
+                   <widget class="QPushButton" name="loadOscilloscopeFileButton">
+                    <property name="text">
+                     <string>Загрузить файл</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="plotFullSpectrumButton">
+                    <property name="text">
+                     <string>Показать спектр</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="leftBoundarySpinBox">
+                    <property name="decimals">
+                     <number>4</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QDoubleSpinBox" name="rightBoundarySpinBox">
+                    <property name="decimals">
+                     <number>4</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="baselineComboBox">
+                    <item>
+                     <property name="text">
+                      <string>Линейная</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Полином 2-й степени</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="2">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Окно ошибок</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLineEdit" name="warningWindowLineEdit">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
-      <item>
-       <property name="text">
-        <string>Полином 2-й степени</string>
-       </property>
-      </item>
-     </widget>
-    </widget>
-   </widget>
-   <widget class="QToolBox" name="toolBox">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>101</width>
-      <height>359</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="page">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>101</width>
-       <height>299</height>
-      </rect>
-     </property>
-     <attribute name="label">
-      <string>Connect Buttons</string>
-     </attribute>
-     <widget class="QPushButton" name="wavemeterConnectButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>wavemeter</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="energymeterConnectButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>60</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>energymeter</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="motorConnectButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>120</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Dye Lazer</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="motorConnectButtonSecond">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>180</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>OPO Lazer</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="oscilloscopeConnectButton">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>240</y>
-        <width>101</width>
-        <height>60</height>
-       </rect>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-      <property name="text">
-       <string>oscilloscope</string>
-      </property>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="page_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>98</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <attribute name="label">
-      <string>Lazer switch</string>
-     </attribute>
-     <widget class="QWidget" name="verticalLayoutWidget">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>101</width>
-        <height>81</height>
-       </rect>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
-       <item>
-        <widget class="QRadioButton" name="UseDyeLazerRadioButton">
-         <property name="text">
-          <string>Dye Lazer</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="UseOPOLazerRadioButton">
-         <property name="text">
-          <string>OPO Lazer</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </widget>
-   </widget>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>895</width>
+     <width>565</width>
      <height>22</height>
     </rect>
    </property>

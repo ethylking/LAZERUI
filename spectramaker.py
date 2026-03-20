@@ -410,7 +410,6 @@ class Spectramaker:
             energy_2 = 0
             z_step = 0
             self.energymeter.refresh()
-            print("refreshed")
             while True:
                 currrent_energy = self.energymeter.get_average_energy(20)
                 if currrent_energy > 0 and currrent_energy < energy_limit * 0.2:
